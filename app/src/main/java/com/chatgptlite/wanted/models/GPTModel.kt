@@ -7,7 +7,7 @@ enum class GPTModel(val model: String, val maxTokens: Int, val isChatCompletion:
     gpt4turbo("gpt-4-turbo-2024-04-09", 4096, isChatCompletion = true),
     gpt4turbopreview("gpt-4-turbo-preview", 4096, isChatCompletion = true),
     gpt41106preview("gpt-4-1106-preview", 4096, isChatCompletion = true),
-    gpt35Turbo("gpt-3.5-turbo", 4096),
+    gpt35Turbo("gpt-3.5-turbo", 4096, isChatCompletion = true),
 
     // Deprecated
 //    gpt4v0613("gpt-4-0613", 8192, isChatCompletion = true),

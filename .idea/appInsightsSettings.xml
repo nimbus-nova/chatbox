@@ -28,9 +28,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.chatgptlite.wanted" />
-                  <option name="mobileSdkAppId" value="1:845089909061:android:8e1db4bc04243a2685362c" />
-                  <option name="projectId" value="chatgpt-compose-a5905" />
-                  <option name="projectNumber" value="845089909061" />
+                  <option name="mobileSdkAppId" value="1:396658128285:android:ff8f7345770ed7cf09eb74" />
+                  <option name="projectId" value="chatbox-39e3e" />
+                  <option name="projectNumber" value="396658128285" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
