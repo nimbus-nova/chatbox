@@ -121,12 +121,6 @@ private fun AppDrawerIn(
         DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
         DrawerItemHeader("Settings")
         ChatItem("Settings", Icons.Filled.Settings, false) { onChatClicked("Settings") }
-        ProfileItem(
-            "lambiengcode (author)",
-            urlToImageAuthor,
-        ) {
-            UrlLauncher().openUrl(context = context, urlToGithub)
-        }
     }
 }
 
