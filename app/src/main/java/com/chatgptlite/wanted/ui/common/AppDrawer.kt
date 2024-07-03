@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.chatgptlite.wanted.R
 import com.chatgptlite.wanted.constants.urlToGithub
 import com.chatgptlite.wanted.constants.urlToImageAppIcon
 import com.chatgptlite.wanted.constants.urlToImageAuthor
@@ -118,9 +120,9 @@ private fun AppDrawerIn(
             currentConversationState,
             conversationState
         )
-        DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
-        DrawerItemHeader("Settings")
-        ChatItem("Settings", Icons.Filled.Settings, false) { onChatClicked("Settings") }
+//        DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
+//        DrawerItemHeader("Settings")
+//        ChatItem("Settings", Icons.Filled.Settings, false) { onChatClicked("Settings") }
     }
 }
 
@@ -139,20 +141,20 @@ private fun DrawerHeader(
                 .weight(1f), verticalAlignment = CenterVertically
         ) {
             Image(
-                painter = rememberAsyncImagePainter(urlToImageAppIcon),
+                painter = painterResource(id = R.drawable.tai_logo), //rememberAsyncImagePainter(urlToImageAppIcon),
                 modifier = paddingSizeModifier.then(Modifier.clip(RoundedCornerShape(6.dp))),
                 contentScale = ContentScale.Crop,
                 contentDescription = null
             )
             Column(modifier = Modifier.padding(horizontal = 12.dp)) {
                 Text(
-                    "ChatGPT Lite",
+                    "TAI GPT",
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.secondary,
                 )
                 Text(
-                    "Powered by OpenAI",
+                    "Powered by UC Berkeley",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White,
