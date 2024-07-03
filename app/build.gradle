@@ -111,6 +111,8 @@ dependencies {
     implementation "com.halilibo.compose-richtext:richtext-commonmark:${richtext_version}"
     implementation "com.halilibo.compose-richtext:richtext-ui-material:${richtext_version}"
     implementation "com.halilibo.compose-richtext:richtext-ui-material3:${richtext_version}"
+
+    implementation "com.bytedance.tools.codelocator:codelocator-core:2.0.4"
 }
 
 // Allow references to generated code
