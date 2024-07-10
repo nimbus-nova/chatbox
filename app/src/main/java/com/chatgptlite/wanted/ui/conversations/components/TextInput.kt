@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.chatgptlite.wanted.constants.debugMode
 import com.chatgptlite.wanted.helpers.AudioPlayer
 import com.chatgptlite.wanted.helpers.AudioRecorder
 import com.chatgptlite.wanted.permission.PermissionCheck
@@ -127,30 +128,31 @@ private fun TextInputIn(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-                    // TODO: play audio
-//                    IconButton(
-//                        onClick = {
-//                            if (isPlaying) {
-//                                audioPlayer.stopPlaying()
-//                                isPlaying = false
-//                            } else {
-//                                recordedFile?.let {
-//                                    audioPlayer.startPlaying(it)
-//                                    isPlaying = true
-//                                    scope.launch {
-//                                        isPlaying = false
-//                                    }
-//                                }
-//                            }
-//                        },
-//                        enabled = recordedFile != null && !isRecording
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Filled.PlayArrow,
-//                            contentDescription = if (isPlaying) "stop" else "play",
-//                            tint = if (isPlaying) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-//                        )
-//                    }
+                    if (debugMode) {
+                        IconButton(
+                            onClick = {
+                                if (isPlaying) {
+                                    audioPlayer.stopPlaying()
+                                    isPlaying = false
+                                } else {
+                                    recordedFile?.let {
+                                        audioPlayer.startPlaying(it)
+                                        isPlaying = true
+                                        scope.launch {
+                                            isPlaying = false
+                                        }
+                                    }
+                                }
+                            },
+                            enabled = recordedFile != null && !isRecording
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = if (isPlaying) "stop" else "play",
+                                tint = if (isPlaying) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
             }
         }
