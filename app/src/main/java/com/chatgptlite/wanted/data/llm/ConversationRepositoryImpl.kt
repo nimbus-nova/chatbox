@@ -1,4 +1,4 @@
-package com.chatgptlite.wanted.data.remote
+package com.chatgptlite.wanted.data.llm
 
 import com.chatgptlite.wanted.constants.conversationCollection
 import com.chatgptlite.wanted.models.ConversationModel

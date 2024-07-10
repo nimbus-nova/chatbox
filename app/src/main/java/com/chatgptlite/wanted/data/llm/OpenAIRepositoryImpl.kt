@@ -1,4 +1,4 @@
-package com.chatgptlite.wanted.data.remote
+package com.chatgptlite.wanted.data.llm
 
 import android.util.Log
 import com.chatgptlite.wanted.data.api.OpenAIApi

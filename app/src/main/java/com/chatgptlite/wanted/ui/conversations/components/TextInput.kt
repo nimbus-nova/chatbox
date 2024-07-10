@@ -3,6 +3,7 @@ package com.chatgptlite.wanted.ui.conversations.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -38,6 +39,7 @@ private fun TextInputIn(
 ) {
     val scope = rememberCoroutineScope()
     var text by remember { mutableStateOf(TextFieldValue("")) }
+    var showVoiceInputPrompt by remember { mutableStateOf(false) }
 
     Box(
         // Use navigationBarsPadding() imePadding() and , to move the input panel above both the
@@ -87,9 +89,33 @@ private fun TextInputIn(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
+                    IconButton(onClick = {
+                        // Handle voice input
+                        showVoiceInputPrompt = true
+                    }) {
+                        Icon(
+                            Icons.Filled.Mic,
+                            "voiceInput",
+                            modifier = Modifier.size(26.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
                 }
             }
         }
+    }
+
+    if (showVoiceInputPrompt) {
+        AlertDialog(
+            onDismissRequest = { showVoiceInputPrompt = false },
+            title = { Text("Voice Input") },
+            text = { Text("Voice input is not implemented yet.") },
+            confirmButton = {
+                TextButton(onClick = { showVoiceInputPrompt = false }) {
+                    Text("OK")
+                }
+            }
+        )
     }
 }
 

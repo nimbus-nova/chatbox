@@ -1,6 +1,6 @@
 package com.chatgptlite.wanted.di
 
-import com.chatgptlite.wanted.data.remote.*
+import com.chatgptlite.wanted.data.llm.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

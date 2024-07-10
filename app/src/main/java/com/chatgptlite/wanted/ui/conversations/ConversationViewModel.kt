@@ -3,9 +3,9 @@
 package com.chatgptlite.wanted.ui.conversations
 
 import androidx.lifecycle.ViewModel
-import com.chatgptlite.wanted.data.remote.ConversationRepository
-import com.chatgptlite.wanted.data.remote.MessageRepository
-import com.chatgptlite.wanted.data.remote.OpenAIRepositoryImpl
+import com.chatgptlite.wanted.data.llm.ConversationRepository
+import com.chatgptlite.wanted.data.llm.MessageRepository
+import com.chatgptlite.wanted.data.llm.OpenAIRepositoryImpl
 import com.chatgptlite.wanted.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

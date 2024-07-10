@@ -1,4 +1,4 @@
-package com.chatgptlite.wanted.data.remote
+package com.chatgptlite.wanted.data.llm
 
 import android.content.ContentValues
 import android.util.Log
