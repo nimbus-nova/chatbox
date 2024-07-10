@@ -125,6 +125,8 @@ dependencies {
     implementation "com.halilibo.compose-richtext:richtext-ui-material3:${richtext_version}"
 
     implementation "com.bytedance.tools.codelocator:codelocator-core:2.0.4"
+
+    implementation 'com.github.wendykierp:JTransforms:3.1'
 }
 
 // Allow references to generated code
