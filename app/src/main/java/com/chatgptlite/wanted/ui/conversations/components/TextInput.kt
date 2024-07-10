@@ -128,7 +128,7 @@ private fun TextInputIn(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-                    if (debugMode) {
+                    if (debugMode && recordedFile != null) {
                         IconButton(
                             onClick = {
                                 if (isPlaying) {
