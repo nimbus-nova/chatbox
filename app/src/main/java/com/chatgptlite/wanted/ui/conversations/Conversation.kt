@@ -24,6 +24,7 @@ import com.chatgptlite.wanted.ui.conversations.components.MessageCard
 import com.chatgptlite.wanted.ui.conversations.components.TextInput
 import com.chatgptlite.wanted.ui.conversations.ui.theme.ChatGPTLiteTheme
 import com.chatgptlite.wanted.ui.theme.BackGroundColor
+import java.util.Date
 
 @Composable
 fun Conversation() {
@@ -115,6 +116,10 @@ fun MessageList(
 @Composable
 fun DefaultPreview2() {
     ChatGPTLiteTheme {
-//        Greeting2("Android")
+        MessageCard(MessageModel(
+            question = "Who is Andy?",
+            answer = "I'm Andy",
+            createdAt = Date()
+        ))
     }
 }
