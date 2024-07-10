@@ -84,30 +84,32 @@ fun MessageList(
                 }
             }
         }
-        ExtendedFloatingActionButton(
-            text = {
-                Text(text = "Stop Generating", color = Color.White)
-            },
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Stop,
-                    contentDescription = "Stop Generating",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(35.dp)
-                )
-            },
-            onClick = {
-                conversationViewModel.stopReceivingResults()
-            },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp)
-                .animateContentSize(),
-            expanded = isFabExpanded,
-            containerColor = MaterialTheme.colorScheme.primary
-        )
+        if (isFabExpanded) {
+            ExtendedFloatingActionButton(
+                text = {
+                    Text(text = "Stop Generating", color = Color.White)
+                },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Default.Stop,
+                        contentDescription = "Stop Generating",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(35.dp)
+                    )
+                },
+                onClick = {
+                    conversationViewModel.stopReceivingResults()
+                },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 16.dp)
+                    .animateContentSize(),
+                expanded = isFabExpanded,
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
