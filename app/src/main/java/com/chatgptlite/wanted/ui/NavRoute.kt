@@ -1,4 +1,6 @@
 package com.chatgptlite.wanted.ui
 
-class NavRoute {
+object NavRoute {
+    const val HOME = "home"
+    const val SETTTINGS = "settings"
 }

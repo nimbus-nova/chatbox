@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppScaffold(
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
+    onSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit = {},
@@ -34,6 +35,7 @@ fun AppScaffold(
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = BackGroundColor) {
                 AppDrawer(
+                    onSettingsClicked = onSettingsClicked,
                     onChatClicked = onChatClicked,
                     onNewChatClicked = onNewChatClicked,
                     onIconClicked = onIconClicked,
