@@ -41,7 +41,7 @@ class SettingsScreenViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     val statusResponse = response.body()
-                    _messageResult.value = "Message sent successfully. Server status: ${statusResponse?.status}"
+                    _messageResult.value = "Message sent successfully. Server status: ${statusResponse?.status}. Request: ${statusResponse?.request}"
                 } else {
                     _messageResult.value = "Error sending message: ${response.message()}"
                 }
