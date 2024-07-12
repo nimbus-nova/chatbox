@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chatgptlite.wanted.constants.debugMode
+import com.chatgptlite.wanted.data.whisper.WhisperHelper
 import com.chatgptlite.wanted.helpers.AudioPlayer
 import com.chatgptlite.wanted.helpers.AudioRecorder
 import com.chatgptlite.wanted.permission.PermissionCheck
@@ -56,6 +59,7 @@ private fun TextInputIn(
     var recordedFile by remember { mutableStateOf<File?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var showPermissionDialog by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
 
     fun openPressRecordingButton() {
         permissionCheck.checkAudioRecordingPermission(
@@ -94,6 +98,7 @@ private fun TextInputIn(
                         placeholder = { Text("Ask me anything", fontSize = 12.sp) },
                         shape = RoundedCornerShape(25.dp),
                         modifier = Modifier
+                            .focusRequester(focusRequester)
                             .fillMaxWidth()
                             .padding(horizontal = 18.dp)
                             .weight(1f),
@@ -164,6 +169,10 @@ private fun TextInputIn(
                 showVoiceInputPrompt = false
                 isRecording = false
                 audioRecorder.stopRecording()
+                recordedFile?.let {
+                    text = TextFieldValue(WhisperHelper.detect(it))
+                    focusRequester.requestFocus()
+                }
             },
             isRecording = isRecording,
         )
