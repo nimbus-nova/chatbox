@@ -13,9 +13,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.chatgptlite.wanted.ui.NavRoute
 import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
 import com.chatgptlite.wanted.ui.conversations.Conversation
+import com.chatgptlite.wanted.ui.settings.SettingsScreen
 import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -35,6 +40,7 @@ class MainActivity : ComponentActivity() {
             ComposeView(this).apply {
                 consumeWindowInsets = false
                 setContent {
+                    val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by mainViewModel.drawerShouldBeOpened.collectAsState()
 
@@ -72,6 +78,12 @@ class MainActivity : ComponentActivity() {
                         ) {
                             AppScaffold(
                                 drawerState = drawerState,
+                                onSettingsClicked = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        navController.navigate(NavRoute.SETTTINGS)
+                                    }
+                                },
                                 onChatClicked = {
                                     scope.launch {
                                         drawerState.close()
@@ -86,17 +98,23 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                ) {
-                                    AppBar(onClickMenu = {
-                                        scope.launch {
-                                            drawerState.open()
+                                NavHost(navController = navController, startDestination = NavRoute.HOME) {
+                                    composable(NavRoute.HOME) {
+                                        Column(modifier = Modifier.fillMaxSize()) {
+                                            AppBar(onClickMenu = {
+                                                scope.launch { drawerState.open() }
+                                            })
+                                            Divider()
+                                            Conversation()
                                         }
-                                    })
-                                    Divider()
-                                    Conversation()
+                                    }
+                                    composable(NavRoute.SETTTINGS) {
+                                        SettingsScreen(
+                                            onBackPressed={
+                                                navController.popBackStack()
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }

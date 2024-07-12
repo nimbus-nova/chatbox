@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AppDrawer(
+    onSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     conversationViewModel: ConversationViewModel = hiltViewModel(),
@@ -69,6 +70,7 @@ fun AppDrawer(
 ) {
     val coroutineScope = rememberCoroutineScope()
     AppDrawerIn(
+        onSettingsClicked = onSettingsClicked,
         onChatClicked = onChatClicked,
         onNewChatClicked = onNewChatClicked,
         onIconClicked = onIconClicked,
@@ -89,6 +91,7 @@ fun AppDrawer(
 
 @Composable
 private fun AppDrawerIn(
+    onSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit,
@@ -120,9 +123,9 @@ private fun AppDrawerIn(
             currentConversationState,
             conversationState
         )
-//        DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
-//        DrawerItemHeader("Settings")
-//        ChatItem("Settings", Icons.Filled.Settings, false) { onChatClicked("Settings") }
+        DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
+        DrawerItemHeader("Settings")
+        ChatItem("Settings", Icons.Filled.Settings, false) { onSettingsClicked() }
     }
 }
 
@@ -392,6 +395,7 @@ fun DividerItem(modifier: Modifier = Modifier) {
 fun PreviewAppDrawerIn(
 ) {
     AppDrawerIn(
+        onSettingsClicked = {},
         onChatClicked = {},
         onNewChatClicked = {},
         onIconClicked = {},
