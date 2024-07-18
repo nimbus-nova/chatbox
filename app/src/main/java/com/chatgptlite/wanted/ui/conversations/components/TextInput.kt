@@ -1,14 +1,37 @@
 package com.chatgptlite.wanted.ui.conversations.components
 
+import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Send
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -21,8 +44,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chatgptlite.wanted.constants.debugMode
 import com.chatgptlite.wanted.data.whisper.WhisperHelper
+import com.chatgptlite.wanted.data.whisper.asr.IRecorderListener
+import com.chatgptlite.wanted.data.whisper.asr.IWhisperListener
+import com.chatgptlite.wanted.data.whisper.asr.Recorder
+import com.chatgptlite.wanted.data.whisper.asr.Whisper
+import com.chatgptlite.wanted.data.whisper.utils.WaveUtil
 import com.chatgptlite.wanted.helpers.AudioPlayer
-import com.chatgptlite.wanted.helpers.AudioRecorder
 import com.chatgptlite.wanted.permission.PermissionCheck
 import com.chatgptlite.wanted.ui.conversations.ConversationViewModel
 import kotlinx.coroutines.launch
@@ -42,6 +69,17 @@ fun TextInput(
         }
     )
 }
+val TAG = "TextInput"
+
+fun getFilePath(context: Context, assetName: String): String {
+    val outfile = File(context.filesDir, assetName);
+    if (!outfile.exists()) {
+        Log.d(TAG, "File not found - " + outfile.absolutePath)
+    }
+
+    Log.d(TAG, "Returned asset path: " + outfile.absolutePath)
+    return outfile.absolutePath
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,21 +90,68 @@ private fun TextInputIn(
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var showVoiceInputPrompt by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val audioRecorder = remember { AudioRecorder(context) }
     val audioPlayer = remember { AudioPlayer() }
     val permissionCheck = remember { PermissionCheck(context) }
     var isRecording by remember { mutableStateOf(false) }
-    var recordedFile by remember { mutableStateOf<File?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var showPermissionDialog by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val useMultilingual = false
+    val modelPath: String by lazy {
+        if (useMultilingual) getFilePath(context, "whisper-tiny.tflite")
+        else getFilePath(context, "whisper-tiny-en.tflite")
+    }
+    val vocabPath: String by lazy {
+        if (useMultilingual) getFilePath(context, "filters_vocab_multilingual.bin")
+        else getFilePath(context, "filters_vocab_en.bin")
+    }
+    val waveFilePath = getFilePath(context, WaveUtil.RECORDING_FILE)
+    val whisper = Whisper(context).apply {
+        loadModel(modelPath, vocabPath, useMultilingual)
+        setListener(object : IWhisperListener {
+            override fun onUpdateReceived(message: String?) {
+                Log.d(TAG, "onUpdateReceived: $message")
+            }
+
+            override fun onResultReceived(result: String?) {
+                Log.d(TAG, "onResultReceived: $result")
+                text = TextFieldValue(result ?: "")
+                focusRequester.requestFocus()
+            }
+        })
+    }
+    val record = Recorder(context).apply {
+        setListener(object : IRecorderListener{
+            override fun onUpdateReceived(message: String?) {
+                Log.d(TAG, "onUpdateReceived: $message")
+                whisper.setFilePath(getFilePath(context, WaveUtil.RECORDING_FILE))
+                whisper.setAction(Whisper.ACTION_TRANSCRIBE)
+                whisper.start()
+            }
+
+            override fun onDataReceived(samples: FloatArray?) {
+                Log.d(TAG, "onDataReceived: $samples")
+            }
+
+        })
+    }
+
+    // Recording calls
+    fun startRecording() {
+        record.setFilePath(waveFilePath)
+        record.start()
+    }
+
+    fun stopRecording() {
+        record.stop()
+    }
 
     fun openPressRecordingButton() {
         permissionCheck.checkAudioRecordingPermission(
             onPermissionGranted = {
                 showVoiceInputPrompt = true
                 isRecording = true
-                recordedFile = audioRecorder.startRecording()
+                startRecording()
             },
             onPermissionDenied = {
                 showPermissionDialog = true
@@ -133,15 +218,15 @@ private fun TextInputIn(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     }
-                    if (debugMode && recordedFile != null) {
+                    if (debugMode) {
                         IconButton(
                             onClick = {
                                 if (isPlaying) {
                                     audioPlayer.stopPlaying()
                                     isPlaying = false
                                 } else {
-                                    recordedFile?.let {
-                                        audioPlayer.startPlaying(it)
+                                    waveFilePath.let {
+                                        audioPlayer.startPlaying(File(it))
                                         isPlaying = true
                                         scope.launch {
                                             isPlaying = false
@@ -149,7 +234,7 @@ private fun TextInputIn(
                                     }
                                 }
                             },
-                            enabled = recordedFile != null && !isRecording
+                            enabled = !isRecording
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.PlayArrow,
@@ -168,11 +253,7 @@ private fun TextInputIn(
             onDismissRequest = {
                 showVoiceInputPrompt = false
                 isRecording = false
-                audioRecorder.stopRecording()
-                recordedFile?.let {
-                    text = TextFieldValue(WhisperHelper.detect(it))
-                    focusRequester.requestFocus()
-                }
+                stopRecording()
             },
             isRecording = isRecording,
         )
