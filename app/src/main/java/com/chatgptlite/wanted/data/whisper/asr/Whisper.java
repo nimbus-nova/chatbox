@@ -70,7 +70,7 @@ public class Whisper {
             Log.d(TAG, "Execution is already in progress...");
             return;
         }
-
+        Log.d(TAG, "Start translating...");
         mExecutorThread = new Thread(() -> {
             mInProgress.set(true);
             threadFunction();

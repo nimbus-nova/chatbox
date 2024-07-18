@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.chatgptlite.wanted.constants.debugMode
-import com.chatgptlite.wanted.data.whisper.WhisperHelper
 import com.chatgptlite.wanted.data.whisper.asr.IRecorderListener
 import com.chatgptlite.wanted.data.whisper.asr.IWhisperListener
 import com.chatgptlite.wanted.data.whisper.asr.Recorder
@@ -96,67 +95,51 @@ private fun TextInputIn(
     var isPlaying by remember { mutableStateOf(false) }
     var showPermissionDialog by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val useMultilingual = false
-    val modelPath: String by lazy {
-        if (useMultilingual) getFilePath(context, "whisper-tiny.tflite")
+    val useMultilingual by remember { mutableStateOf(false) }
+    var modelPath by remember { mutableStateOf("") }
+    var vocabPath by remember { mutableStateOf("") }
+    modelPath = if (useMultilingual) getFilePath(context, "whisper-tiny.tflite")
         else getFilePath(context, "whisper-tiny-en.tflite")
-    }
-    val vocabPath: String by lazy {
-        if (useMultilingual) getFilePath(context, "filters_vocab_multilingual.bin")
+    vocabPath = if (useMultilingual) getFilePath(context, "filters_vocab_multilingual.bin")
         else getFilePath(context, "filters_vocab_en.bin")
+    val waveFilePath = remember {
+        getFilePath(context, WaveUtil.RECORDING_FILE)
     }
-    val waveFilePath = getFilePath(context, WaveUtil.RECORDING_FILE)
-    val whisper = Whisper(context).apply {
-        loadModel(modelPath, vocabPath, useMultilingual)
-        setListener(object : IWhisperListener {
-            override fun onUpdateReceived(message: String?) {
-                Log.d(TAG, "onUpdateReceived: $message")
-            }
+    val whisper = remember {
+        Whisper(context).apply {
+            loadModel(modelPath, vocabPath, useMultilingual)
+            setListener(object : IWhisperListener {
+                override fun onUpdateReceived(message: String?) {
+                    Log.d(TAG, "onUpdateReceived: $message")
+                }
 
-            override fun onResultReceived(result: String?) {
-                Log.d(TAG, "onResultReceived: $result")
-                text = TextFieldValue(result ?: "")
-                focusRequester.requestFocus()
-            }
-        })
+                override fun onResultReceived(result: String?) {
+                    Log.d(TAG, "onResultReceived: $result")
+                    text = TextFieldValue(result ?: "")
+                }
+            })
+        }
     }
-    val record = Recorder(context).apply {
-        setListener(object : IRecorderListener{
-            override fun onUpdateReceived(message: String?) {
-                Log.d(TAG, "onUpdateReceived: $message")
-                whisper.setFilePath(getFilePath(context, WaveUtil.RECORDING_FILE))
-                whisper.setAction(Whisper.ACTION_TRANSCRIBE)
-                whisper.start()
-            }
+    val record = remember {
+        Recorder(context).apply {
+            setListener(object : IRecorderListener{
+                override fun onUpdateReceived(message: String) {
+                    Log.d(TAG, "onUpdateReceived: $message")
+                    if (message.contains("done")) {
+                        Log.d(TAG, "start translation")
+                        whisper.setFilePath(getFilePath(context, WaveUtil.RECORDING_FILE))
+                        whisper.setAction(Whisper.ACTION_TRANSCRIBE)
+                        whisper.start()
+                    }
+                    Log.d(TAG, "${message.contains("done")} $message ${Whisper.MSG_PROCESSING_DONE}")
+                }
 
-            override fun onDataReceived(samples: FloatArray?) {
-                Log.d(TAG, "onDataReceived: $samples")
-            }
+                override fun onDataReceived(samples: FloatArray?) {
+//                    Log.d(TAG, "onDataReceived: $samples")
+                }
 
-        })
-    }
-
-    // Recording calls
-    fun startRecording() {
-        record.setFilePath(waveFilePath)
-        record.start()
-    }
-
-    fun stopRecording() {
-        record.stop()
-    }
-
-    fun openPressRecordingButton() {
-        permissionCheck.checkAudioRecordingPermission(
-            onPermissionGranted = {
-                showVoiceInputPrompt = true
-                isRecording = true
-                startRecording()
-            },
-            onPermissionDenied = {
-                showPermissionDialog = true
-            }
-        )
+            })
+        }
     }
 
     Box(
@@ -209,7 +192,20 @@ private fun TextInputIn(
                         )
                     }
                     IconButton(
-                        onClick = { openPressRecordingButton() },
+                        onClick = {
+                            permissionCheck.checkAudioRecordingPermission(
+                                onPermissionGranted = {
+                                    showVoiceInputPrompt = true
+                                    isRecording = true
+                                    text = TextFieldValue("")
+                                    record.setFilePath(waveFilePath)
+                                    record.start()
+                                },
+                                onPermissionDenied = {
+                                    showPermissionDialog = true
+                                }
+                            )
+                        },
                     ) {
                         Icon(
                             Icons.Filled.Mic,
@@ -225,12 +221,10 @@ private fun TextInputIn(
                                     audioPlayer.stopPlaying()
                                     isPlaying = false
                                 } else {
-                                    waveFilePath.let {
-                                        audioPlayer.startPlaying(File(it))
-                                        isPlaying = true
-                                        scope.launch {
-                                            isPlaying = false
-                                        }
+                                    audioPlayer.startPlaying(File(waveFilePath))
+                                    isPlaying = true
+                                    scope.launch {
+                                        isPlaying = false
                                     }
                                 }
                             },
@@ -253,7 +247,8 @@ private fun TextInputIn(
             onDismissRequest = {
                 showVoiceInputPrompt = false
                 isRecording = false
-                stopRecording()
+                record.stop()
+                focusRequester.requestFocus()
             },
             isRecording = isRecording,
         )
