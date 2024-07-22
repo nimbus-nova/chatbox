@@ -128,7 +128,10 @@ class MainActivity : ComponentActivity() {
                                     composable(NavRoute.MlcSettings) {
                                         MlCModelSettings(
                                             navController = navController,
-                                            modelViewController = modelViewController
+                                            modelViewController = modelViewController,
+                                            onBackPressed = {
+                                                navController.popBackStack()
+                                            }
                                         )
                                     }
                                 }

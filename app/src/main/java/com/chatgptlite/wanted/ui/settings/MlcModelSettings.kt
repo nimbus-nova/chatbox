@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -48,14 +49,20 @@ import androidx.navigation.NavController
 @Composable
 fun MlCModelSettings(
     navController: NavController,
-    modelViewController: MlcModelSettingsViewModel
+    modelViewController: MlcModelSettingsViewModel,
+    onBackPressed: () -> Unit
 ) {
     val localFocusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Choose Model", color = MaterialTheme.colorScheme.onPrimary) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
+                navigationIcon = {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         },
         modifier = Modifier.pointerInput(Unit) {
