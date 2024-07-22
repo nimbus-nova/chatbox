@@ -21,9 +21,12 @@ import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
 import com.chatgptlite.wanted.ui.conversations.Conversation
 import com.chatgptlite.wanted.ui.settings.SettingsScreen
+import com.chatgptlite.wanted.ui.settings.MlCModelSettings
+import com.chatgptlite.wanted.ui.settings.MlcModelSettingsViewModel
 import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by mainViewModel.drawerShouldBeOpened.collectAsState()
+                    val modelViewController = viewModel<MlcModelSettingsViewModel>()
 
                     if (drawerOpen) {
                         // Open drawer and reset state in VM.
@@ -81,7 +85,13 @@ class MainActivity : ComponentActivity() {
                                 onSettingsClicked = {
                                     scope.launch {
                                         drawerState.close()
-                                        navController.navigate(NavRoute.SETTTINGS)
+                                        navController.navigate(NavRoute.ROVER_SETTINGS)
+                                    }
+                                },
+                                onModelSettingsClicked = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        navController.navigate(NavRoute.MlcSettings)
                                     }
                                 },
                                 onChatClicked = {
@@ -108,11 +118,17 @@ class MainActivity : ComponentActivity() {
                                             Conversation()
                                         }
                                     }
-                                    composable(NavRoute.SETTTINGS) {
+                                    composable(NavRoute.ROVER_SETTINGS) {
                                         SettingsScreen(
                                             onBackPressed={
                                                 navController.popBackStack()
                                             }
+                                        )
+                                    }
+                                    composable(NavRoute.MlcSettings) {
+                                        MlCModelSettings(
+                                            navController = navController,
+                                            modelViewController = modelViewController
                                         )
                                     }
                                 }

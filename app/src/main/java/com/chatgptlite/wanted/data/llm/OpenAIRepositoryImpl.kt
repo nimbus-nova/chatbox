@@ -1,5 +1,6 @@
 package com.chatgptlite.wanted.data.llm
 
+import android.app.Application
 import android.util.Log
 import com.chatgptlite.wanted.data.api.OpenAIApi
 import com.chatgptlite.wanted.models.TextCompletionsParam
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 class OpenAIRepositoryImpl @Inject constructor(
     private val openAIApi: OpenAIApi,
+    private val application: Application
 ) : OpenAIRepository {
     override fun textCompletionsWithStream(params: TextCompletionsParam): Flow<String> =
         callbackFlow {

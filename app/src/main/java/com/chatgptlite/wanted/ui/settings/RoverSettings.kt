@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +23,7 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
     }
     var textToSend by remember { mutableStateOf("ros2 topic list") }
 
-    val viewModel: SettingsScreenViewModel = viewModel()
+    val viewModel: RoverSettingsViewModel = viewModel()
 
     val pingResult by viewModel.pingResult.collectAsState()
     val messageResult by viewModel.messageResult.collectAsState()
