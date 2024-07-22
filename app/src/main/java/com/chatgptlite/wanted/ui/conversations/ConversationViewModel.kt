@@ -21,6 +21,7 @@ class ConversationViewModel @Inject constructor(
     private val conversationRepo: ConversationRepository,
     private val messageRepo: MessageRepository,
     private val openAIRepo: OpenAIRepositoryImpl,
+
 ) : ViewModel() {
     private val _currentConversation: MutableStateFlow<String> =
         MutableStateFlow(Date().time.toString())

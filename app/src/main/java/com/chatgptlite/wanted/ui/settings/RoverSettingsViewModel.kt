@@ -7,9 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.net.InetAddress
 
-class SettingsScreenViewModel : ViewModel() {
+class RoverSettingsViewModel : ViewModel() {
 
     private val _pingResult = MutableStateFlow<String?>(null)
     val pingResult: StateFlow<String?> = _pingResult.asStateFlow()

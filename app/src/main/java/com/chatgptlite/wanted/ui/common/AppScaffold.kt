@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppScaffold(
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
+    onModelSettingsClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
@@ -39,6 +40,7 @@ fun AppScaffold(
                     onChatClicked = onChatClicked,
                     onNewChatClicked = onNewChatClicked,
                     onIconClicked = onIconClicked,
+                    onModelSettingsClicked = onModelSettingsClicked,
                 )
             }
         },

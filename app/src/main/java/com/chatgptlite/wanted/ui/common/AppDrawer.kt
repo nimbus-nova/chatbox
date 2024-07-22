@@ -25,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.AddComment
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Message
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,10 +50,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.chatgptlite.wanted.R
-import com.chatgptlite.wanted.constants.urlToGithub
-import com.chatgptlite.wanted.constants.urlToImageAppIcon
-import com.chatgptlite.wanted.constants.urlToImageAuthor
-import com.chatgptlite.wanted.helpers.UrlLauncher
 import com.chatgptlite.wanted.models.ConversationModel
 import com.chatgptlite.wanted.ui.conversations.ConversationViewModel
 import kotlinx.coroutines.launch
@@ -62,6 +57,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun AppDrawer(
+    onModelSettingsClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
@@ -70,7 +66,8 @@ fun AppDrawer(
 ) {
     val coroutineScope = rememberCoroutineScope()
     AppDrawerIn(
-        onSettingsClicked = onSettingsClicked,
+        onModelSettingsClicked = onModelSettingsClicked,
+        onRoverSettingsClicked = onSettingsClicked,
         onChatClicked = onChatClicked,
         onNewChatClicked = onNewChatClicked,
         onIconClicked = onIconClicked,
@@ -91,7 +88,8 @@ fun AppDrawer(
 
 @Composable
 private fun AppDrawerIn(
-    onSettingsClicked: () -> Unit,
+    onRoverSettingsClicked: () -> Unit,
+    onModelSettingsClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit,
@@ -125,7 +123,8 @@ private fun AppDrawerIn(
         )
         DividerItem(modifier = Modifier.padding(horizontal = 28.dp))
         DrawerItemHeader("Settings")
-        ChatItem("Settings", Icons.Filled.Settings, false) { onSettingsClicked() }
+        ChatItem("Rover", Icons.Filled.Accessibility, false) { onRoverSettingsClicked() }
+        ChatItem("Models", Icons.Filled.Android, false) { onModelSettingsClicked() }
     }
 }
 
@@ -395,7 +394,8 @@ fun DividerItem(modifier: Modifier = Modifier) {
 fun PreviewAppDrawerIn(
 ) {
     AppDrawerIn(
-        onSettingsClicked = {},
+        onRoverSettingsClicked = {},
+        onModelSettingsClicked = {},
         onChatClicked = {},
         onNewChatClicked = {},
         onIconClicked = {},
@@ -404,7 +404,6 @@ fun PreviewAppDrawerIn(
         conversationState = mutableListOf(),
         currentConversationState = String(),
         onConversation = { _: ConversationModel -> }
-
     )
 
 }
