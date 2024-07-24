@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.chatgptlite.wanted.ui.NavRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -179,10 +180,10 @@ fun ModelView(
             } else if (modelState.modelInitState.value == ModelInitState.Finished) {
                 IconButton(
                     onClick = {
+                        navController.navigate(NavRoute.HOME)
                         modelState.startChat()
-                        navController.navigate("chat")
                     },
-                    enabled = modelViewController.chatState.interruptable(),
+//                    enabled = modelViewController.chatState.interruptable(),
                     modifier = Modifier
                         .aspectRatio(1f)
                         .weight(1f)

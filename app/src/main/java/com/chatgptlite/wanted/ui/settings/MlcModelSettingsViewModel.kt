@@ -26,13 +26,16 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.chatgptlite.wanted.data.llm.OpenAIRepository
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 class MlcModelSettingsViewModel @Inject constructor (
     private val application: Application) : AndroidViewModel(application) {
+    private val TAG : String = "MlcModelSettingsViewModel"
     val modelList = emptyList<ModelState>().toMutableStateList()
     val chatState = ChatState()
     val modelSampleList = emptyList<ModelRecord>().toMutableStateList()
@@ -520,7 +523,9 @@ class MlcModelSettingsViewModel @Inject constructor (
         private val viewModelScope = CoroutineScope(Dispatchers.Default + Job())
         private fun mainResetChat() {
             executorService.submit {
-                callBackend { engine.reset() }
+                callBackend {
+//                    engine.reset()
+                }
                 viewModelScope.launch {
                     clearHistory()
                     switchToReady()
@@ -576,10 +581,10 @@ class MlcModelSettingsViewModel @Inject constructor (
             require(interruptable())
             interruptChat(
                 prologue = {
-                    switchToResetting()
+//                    switchToResetting()
                 },
                 epilogue = {
-                    mainResetChat()
+//                    mainResetChat()
                 }
             )
         }
@@ -652,17 +657,22 @@ class MlcModelSettingsViewModel @Inject constructor (
             this.modelPath = modelPath
             executorService.submit {
                 viewModelScope.launch {
-                    Toast.makeText(application, "Initialize...", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(application, "Initialize...", Toast.LENGTH_SHORT).show()
+                    }
                 }
                 if (!callBackend {
                         engine.unload()
                         engine.reload(modelPath, modelConfig.modelLib)
                     }) return@submit
                 viewModelScope.launch {
-                    Toast.makeText(application, "Ready to chat", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(application, "Ready to chat", Toast.LENGTH_SHORT).show()
+                    }
                     switchToReady()
                 }
             }
+            Log.d(TAG, "Reload chat done")
         }
 
         fun requestGenerate(prompt: String) {
