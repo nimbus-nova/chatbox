@@ -723,13 +723,40 @@ class MlcLLMRepositoryImpl @Inject constructor (
 
     override fun textCompletionsWithStream(params: TextCompletionsParam): Flow<String> {
         Log.d("MlcLLMRepository", "textCompletionsWithStream")
+//        require(chatable())
+//        switchToGenerating()
         return callbackFlow {
             withContext(Dispatchers.IO) {
+//                val channel = engine.chat.completions.create(
+//                    messages = listOf(
+//                        OpenAIProtocol.ChatCompletionMessage(
+//                            role = OpenAIProtocol.ChatCompletionRole.user,
+//                            content = params.promptText
+//                        )
+//                    ),
+//                    stream_options = OpenAIProtocol.StreamOptions(include_usage = true)
+//                )
+//                var texts = ""
+//                for (response in channel) {
+//                    if (!callBackend {
+//                            val finalsage = response.usage
+//                            if (finalsage != null) {
+//                                report.value = (finalsage.extra?.asTextLabel()?:"")
+//                            } else {
+//                                if (response.choices.size > 0) {
+//                                    texts = response.choices[0].delta.content?.asText().orEmpty()
+//                                    trySend(texts)
+//                                }
+//                            }
+//                        });
+//                }
                 trySend("test")
                 close()
             }
 
             close()
+
+//            if (modelChatState.value == ModelChatState.Generating) switchToReady()
         }
     }
 }

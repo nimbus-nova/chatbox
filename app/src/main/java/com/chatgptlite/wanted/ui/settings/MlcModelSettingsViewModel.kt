@@ -34,7 +34,8 @@ import javax.inject.Inject
 
 
 class MlcModelSettingsViewModel @Inject constructor (
-    private val application: Application) : AndroidViewModel(application) {
+    private val application: Application
+) : AndroidViewModel(application) {
     private val TAG : String = "MlcModelSettingsViewModel"
     val modelList = emptyList<ModelState>().toMutableStateList()
     val chatState = ChatState()
