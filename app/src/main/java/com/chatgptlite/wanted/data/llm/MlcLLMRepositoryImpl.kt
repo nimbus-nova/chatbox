@@ -25,12 +25,15 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import android.app.Application
+import android.util.Log
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 class MlcLLMRepositoryImpl @Inject constructor (
     private val application: Application
-): OpenAIRepository {
+): MlcLLMRepository {
     val modelList = emptyList<ModelState>().toMutableStateList()
     val chatState = ChatState()
     val modelSampleList = emptyList<ModelRecord>().toMutableStateList()
@@ -719,7 +722,15 @@ class MlcLLMRepositoryImpl @Inject constructor (
     }
 
     override fun textCompletionsWithStream(params: TextCompletionsParam): Flow<String> {
-        TODO("Not yet implemented")
+        Log.d("MlcLLMRepository", "textCompletionsWithStream")
+        return callbackFlow {
+            withContext(Dispatchers.IO) {
+                trySend("test")
+                close()
+            }
+
+            close()
+        }
     }
 }
 
