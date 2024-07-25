@@ -582,10 +582,10 @@ class MlcModelSettingsViewModel @Inject constructor (
             require(interruptable())
             interruptChat(
                 prologue = {
-//                    switchToResetting()
+                    switchToResetting()
                 },
                 epilogue = {
-//                    mainResetChat()
+                    mainResetChat()
                 }
             )
         }

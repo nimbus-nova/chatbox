@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.HOME) {
+                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
                                             AppBar(onClickMenu = {
@@ -131,7 +131,7 @@ class MainActivity : ComponentActivity() {
                                             navController = navController,
                                             modelViewController = modelViewController,
                                             onBackPressed = {
-                                                navController.popBackStack()
+                                                navController.navigate(NavRoute.HOME)
                                             }
                                         )
                                     }
