@@ -109,7 +109,7 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
+                                NavHost(navController = navController, startDestination = NavRoute.ROVER_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
                                             AppBar(onClickMenu = {
@@ -122,7 +122,7 @@ class MainActivity : ComponentActivity() {
                                     composable(NavRoute.ROVER_SETTINGS) {
                                         SettingsScreen(
                                             onBackPressed={
-                                                navController.popBackStack()
+                                                navController.navigate(NavRoute.HOME)
                                             }
                                         )
                                     }

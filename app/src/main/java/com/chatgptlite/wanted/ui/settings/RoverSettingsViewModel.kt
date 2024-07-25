@@ -1,14 +1,19 @@
 package com.chatgptlite.wanted.ui.settings
 
+import android.app.Application
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chatgptlite.wanted.helpers.sendMessage
+import dagger.hilt.android.internal.Contexts.getApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class RoverSettingsViewModel : ViewModel() {
+class RoverSettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _pingResult = MutableStateFlow<String?>(null)
     val pingResult: StateFlow<String?> = _pingResult.asStateFlow()
@@ -50,8 +55,38 @@ class RoverSettingsViewModel : ViewModel() {
         }
     }
 
+    fun saveConfig(ipAddress: String, port: String, textToSend: String) {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("RoverSettings", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("ipAddress", ipAddress)
+            putString("port", port)
+            putString("textToSend", textToSend)
+            apply()
+        }
+        Log.i("RoverSettingsViewModel", "Config saved: $ipAddress:$port -> $textToSend")
+    }
+
+    fun loadConfig(): RoverConfig? {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("RoverSettings", Context.MODE_PRIVATE)
+        val ipAddress = sharedPreferences.getString("ipAddress", null)
+        val port = sharedPreferences.getString("port", null)
+        val textToSend = sharedPreferences.getString("textToSend", null)
+
+        return if (ipAddress != null && port != null && textToSend != null) {
+            RoverConfig(ipAddress, port, textToSend)
+        } else {
+            null
+        }
+    }
+
     fun clearResults() {
         _pingResult.value = null
         _messageResult.value = null
     }
 }
+
+data class RoverConfig(
+    val ipAddress: String,
+    val port: String,
+    val textToSend: String
+)
