@@ -27,6 +27,7 @@ import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.chatgptlite.wanted.ui.conversations.ChatView
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
                                 onModelSettingsClicked = {
                                     scope.launch {
                                         drawerState.close()
-                                        navController.navigate(NavRoute.MlcSettings)
+                                        navController.navigate(NavRoute.MLC_SETTINGS)
                                     }
                                 },
                                 onChatClicked = {
@@ -125,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                             }
                                         )
                                     }
-                                    composable(NavRoute.MlcSettings) {
+                                    composable(NavRoute.MLC_SETTINGS) {
                                         MlCModelSettings(
                                             navController = navController,
                                             modelViewController = modelViewController,
@@ -133,6 +134,9 @@ class MainActivity : ComponentActivity() {
                                                 navController.popBackStack()
                                             }
                                         )
+                                    }
+                                    composable(NavRoute.MLC_CHAT) {
+                                        ChatView(navController = navController, chatState = modelViewController.chatState)
                                     }
                                 }
                             }

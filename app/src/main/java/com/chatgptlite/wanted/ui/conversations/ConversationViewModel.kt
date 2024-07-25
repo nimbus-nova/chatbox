@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import com.chatgptlite.wanted.data.llm.AIRepository
 import com.chatgptlite.wanted.data.llm.ConversationRepository
 import com.chatgptlite.wanted.data.llm.MessageRepository
-import com.chatgptlite.wanted.data.llm.MlcLLMRepository
 import com.chatgptlite.wanted.data.llm.OpenAIRepository
 import com.chatgptlite.wanted.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,20 +13,11 @@ import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 
-/**
- * Used to communicate between screens.
- */
-enum class RepoType(type: Int) {
-    OpenAIRepo(1),
-    MLCAIRepo(2)
-}
-
 @HiltViewModel
 class ConversationViewModel @Inject constructor(
     private val conversationRepo: ConversationRepository,
     private val messageRepo: MessageRepository,
     private val openAIRepo: OpenAIRepository,
-    private val mlcAIRepo: MlcLLMRepository
 ) : ViewModel() {
     private val _currentConversation: MutableStateFlow<String> =
         MutableStateFlow(Date().time.toString())
@@ -48,13 +38,9 @@ class ConversationViewModel @Inject constructor(
 
     private var stopReceivingResults = false
 
-    private val repoType: RepoType = RepoType.MLCAIRepo
     private val aiRepository: AIRepository
         get() {
-            return when(repoType) {
-                RepoType.OpenAIRepo -> openAIRepo
-                RepoType.MLCAIRepo -> mlcAIRepo
-            }
+            return openAIRepo
         }
 
 

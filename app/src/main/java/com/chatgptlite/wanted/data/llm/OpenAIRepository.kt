@@ -8,5 +8,3 @@ interface AIRepository {
 }
 
 interface OpenAIRepository: AIRepository
-
-interface MlcLLMRepository: AIRepository

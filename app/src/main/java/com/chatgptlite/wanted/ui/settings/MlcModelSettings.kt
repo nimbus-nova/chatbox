@@ -180,8 +180,8 @@ fun ModelView(
             } else if (modelState.modelInitState.value == ModelInitState.Finished) {
                 IconButton(
                     onClick = {
-                        navController.navigate(NavRoute.HOME)
-                        modelState.startChat()
+                        navController.navigate(NavRoute.MLC_CHAT)
+                        modelState.run { startChat() }
                     },
 //                    enabled = modelViewController.chatState.interruptable(),
                     modifier = Modifier
