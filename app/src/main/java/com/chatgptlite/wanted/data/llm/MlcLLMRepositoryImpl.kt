@@ -25,12 +25,22 @@ import java.util.UUID
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import android.app.Application
+<<<<<<< HEAD
+=======
+import android.util.Log
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.withContext
+>>>>>>> 4b4a9d75465b1d09f58be13761be645a366765ee
 import javax.inject.Inject
 
 
 class MlcLLMRepositoryImpl @Inject constructor (
     private val application: Application
+<<<<<<< HEAD
 ): OpenAIRepository {
+=======
+): MlcLLMRepository {
+>>>>>>> 4b4a9d75465b1d09f58be13761be645a366765ee
     val modelList = emptyList<ModelState>().toMutableStateList()
     val chatState = ChatState()
     val modelSampleList = emptyList<ModelRecord>().toMutableStateList()
@@ -719,7 +729,46 @@ class MlcLLMRepositoryImpl @Inject constructor (
     }
 
     override fun textCompletionsWithStream(params: TextCompletionsParam): Flow<String> {
+<<<<<<< HEAD
         TODO("Not yet implemented")
+=======
+        Log.d("MlcLLMRepository", "textCompletionsWithStream")
+//        require(chatable())
+//        switchToGenerating()
+        return callbackFlow {
+            withContext(Dispatchers.IO) {
+//                val channel = engine.chat.completions.create(
+//                    messages = listOf(
+//                        OpenAIProtocol.ChatCompletionMessage(
+//                            role = OpenAIProtocol.ChatCompletionRole.user,
+//                            content = params.promptText
+//                        )
+//                    ),
+//                    stream_options = OpenAIProtocol.StreamOptions(include_usage = true)
+//                )
+//                var texts = ""
+//                for (response in channel) {
+//                    if (!callBackend {
+//                            val finalsage = response.usage
+//                            if (finalsage != null) {
+//                                report.value = (finalsage.extra?.asTextLabel()?:"")
+//                            } else {
+//                                if (response.choices.size > 0) {
+//                                    texts = response.choices[0].delta.content?.asText().orEmpty()
+//                                    trySend(texts)
+//                                }
+//                            }
+//                        });
+//                }
+                trySend("test")
+                close()
+            }
+
+            close()
+
+//            if (modelChatState.value == ModelChatState.Generating) switchToReady()
+        }
+>>>>>>> 4b4a9d75465b1d09f58be13761be645a366765ee
     }
 }
 

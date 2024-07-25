@@ -27,6 +27,10 @@ abstract class RepositoryModule {
     @Binds
     abstract fun mlcRepository(
         repo: MlcLLMRepositoryImpl
+<<<<<<< HEAD
     ): OpenAIRepository
+=======
+    ): MlcLLMRepository
+>>>>>>> 4b4a9d75465b1d09f58be13761be645a366765ee
 
 }
