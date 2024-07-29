@@ -5,12 +5,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,10 +24,19 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
     }
     var textToSend by remember { mutableStateOf("ros2 topic list") }
 
-    val viewModel: SettingsScreenViewModel = viewModel()
+    val viewModel: RoverSettingsViewModel = viewModel()
 
     val pingResult by viewModel.pingResult.collectAsState()
     val messageResult by viewModel.messageResult.collectAsState()
+
+    LaunchedEffect(Unit) {
+        val config = viewModel.loadConfig()
+        config?.let {
+            ipAddress = it.ipAddress
+            port = it.port
+            textToSend = it.textToSend
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -96,6 +105,19 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { viewModel.saveConfig(ipAddress, port, textToSend) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Save")
+                }
+            }
+
+
             pingResult?.let { Text("Ping result: $it") }
             messageResult?.let { Text("Message result: $it") }
         }

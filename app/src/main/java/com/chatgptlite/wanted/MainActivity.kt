@@ -21,9 +21,13 @@ import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
 import com.chatgptlite.wanted.ui.conversations.Conversation
 import com.chatgptlite.wanted.ui.settings.SettingsScreen
+import com.chatgptlite.wanted.ui.settings.MlCModelSettings
+import com.chatgptlite.wanted.ui.settings.MlcModelSettingsViewModel
 import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.chatgptlite.wanted.ui.conversations.ChatView
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by mainViewModel.drawerShouldBeOpened.collectAsState()
+                    val modelViewController = viewModel<MlcModelSettingsViewModel>()
 
                     if (drawerOpen) {
                         // Open drawer and reset state in VM.
@@ -81,7 +86,13 @@ class MainActivity : ComponentActivity() {
                                 onSettingsClicked = {
                                     scope.launch {
                                         drawerState.close()
-                                        navController.navigate(NavRoute.SETTTINGS)
+                                        navController.navigate(NavRoute.ROVER_SETTINGS)
+                                    }
+                                },
+                                onModelSettingsClicked = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        navController.navigate(NavRoute.MLC_SETTINGS)
                                     }
                                 },
                                 onChatClicked = {
@@ -98,7 +109,7 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.HOME) {
+                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
                                             AppBar(onClickMenu = {
@@ -108,12 +119,24 @@ class MainActivity : ComponentActivity() {
                                             Conversation()
                                         }
                                     }
-                                    composable(NavRoute.SETTTINGS) {
+                                    composable(NavRoute.ROVER_SETTINGS) {
                                         SettingsScreen(
                                             onBackPressed={
-                                                navController.popBackStack()
+                                                navController.navigate(NavRoute.HOME)
                                             }
                                         )
+                                    }
+                                    composable(NavRoute.MLC_SETTINGS) {
+                                        MlCModelSettings(
+                                            navController = navController,
+                                            modelViewController = modelViewController,
+                                            onBackPressed = {
+                                                navController.navigate(NavRoute.HOME)
+                                            }
+                                        )
+                                    }
+                                    composable(NavRoute.MLC_CHAT) {
+                                        ChatView(navController = navController, chatState = modelViewController.chatState)
                                     }
                                 }
                             }

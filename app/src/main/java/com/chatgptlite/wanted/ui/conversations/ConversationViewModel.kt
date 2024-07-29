@@ -3,24 +3,21 @@
 package com.chatgptlite.wanted.ui.conversations
 
 import androidx.lifecycle.ViewModel
+import com.chatgptlite.wanted.data.llm.AIRepository
 import com.chatgptlite.wanted.data.llm.ConversationRepository
 import com.chatgptlite.wanted.data.llm.MessageRepository
-import com.chatgptlite.wanted.data.llm.OpenAIRepositoryImpl
+import com.chatgptlite.wanted.data.llm.OpenAIRepository
 import com.chatgptlite.wanted.models.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 
-/**
- * Used to communicate between screens.
- */
-
 @HiltViewModel
 class ConversationViewModel @Inject constructor(
     private val conversationRepo: ConversationRepository,
     private val messageRepo: MessageRepository,
-    private val openAIRepo: OpenAIRepositoryImpl,
+    private val openAIRepo: OpenAIRepository,
 ) : ViewModel() {
     private val _currentConversation: MutableStateFlow<String> =
         MutableStateFlow(Date().time.toString())
@@ -40,6 +37,11 @@ class ConversationViewModel @Inject constructor(
     val isFabExpanded: StateFlow<Boolean> get() = _isFabExpanded
 
     private var stopReceivingResults = false
+
+    private val aiRepository: AIRepository
+        get() {
+            return openAIRepo
+        }
 
 
 
@@ -84,7 +86,7 @@ class ConversationViewModel @Inject constructor(
         setMessages(currentListMessage)
 
         // Execute API OpenAI
-        val flow: Flow<String> = openAIRepo.textCompletionsWithStream(
+        val flow: Flow<String> = aiRepository.textCompletionsWithStream(
             TextCompletionsParam(
                 promptText = getPrompt(_currentConversation.value),
                 messagesTurbo = getMessagesParamsTurbo(_currentConversation.value)
