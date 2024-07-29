@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class RoverSettingsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -41,7 +43,10 @@ class RoverSettingsViewModel(application: Application) : AndroidViewModel(applic
         viewModelScope.launch {
             try {
                 val (ip, port) = ipAddress.split(":")
-                val response = sendMessage(ip, port, textToSend)
+                // url encode the textToSend
+                val encodedText = URLEncoder.encode(textToSend, StandardCharsets.UTF_8.toString())
+
+                val response = sendMessage(ip, port, encodedText)
 
                 if (response.isSuccessful) {
                     val statusResponse = response.body()
