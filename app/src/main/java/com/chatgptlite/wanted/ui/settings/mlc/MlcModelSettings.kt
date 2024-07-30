@@ -1,4 +1,4 @@
-package com.chatgptlite.wanted.ui.settings
+package com.chatgptlite.wanted.ui.settings.mlc
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement

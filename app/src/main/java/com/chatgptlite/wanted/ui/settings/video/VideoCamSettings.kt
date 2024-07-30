@@ -1,12 +1,28 @@
-package com.chatgptlite.wanted.ui.settings
+package com.chatgptlite.wanted.ui.settings.video
 
-import androidx.compose.foundation.layout.*
+import android.graphics.Bitmap
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,29 +30,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.foundation.Image
+import androidx.compose.material3.OutlinedTextField
+
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.asImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBackPressed: () -> Unit) {
+fun VideoStreamingSetting(onBackPressed: () -> Unit) {
     var ipAddress by remember { mutableStateOf("10.0.0.9") }
     var port by remember {
         mutableStateOf("8000")
     }
-    var textToSend by remember { mutableStateOf("ros2 topic list") }
-
-    val viewModel: RoverSettingsViewModel = viewModel()
-
-    val pingResult by viewModel.pingResult.collectAsState()
-    val messageResult by viewModel.messageResult.collectAsState()
-
-    LaunchedEffect(Unit) {
-        val config = viewModel.loadConfig()
-        config?.let {
-            ipAddress = it.ipAddress
-            port = it.port
-            textToSend = it.textToSend
-        }
+    var route by remember {
+        mutableStateOf("/v1/video")
     }
+
+    val viewModel: VideoCamSettingsViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -56,7 +67,7 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            // IP Address and Port row
+            // IP Address and Port row (keep existing code)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -77,49 +88,54 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
-                value = textToSend,
-                onValueChange = { textToSend = it },
-                label = { Text("Text to send") },
+                value = route,
+                onValueChange = { route = it },
+                label = { Text("route") },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Add the video feed display
+            VideoFeedDisplay(viewModel.currentFrame.value)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Button(
-
-                    onClick = { viewModel.sendPing("$ipAddress:$port") },
+                    onClick = { viewModel.receiveFeed(ipAddress, port, route) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Send Ping")
+                    Text("Receive Video")
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Button(
-                    onClick = { viewModel.sendMessage("$ipAddress:$port", textToSend = textToSend) },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Send Message")
-                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = { viewModel.saveConfig(ipAddress, port, textToSend) },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Save")
-                }
-            }
+        }
+    }
+}
 
-
-            pingResult?.let { Text("Ping result: $it") }
-            messageResult?.let { Text("Message result: $it") }
+@Composable
+fun VideoFeedDisplay(bitmap: Bitmap?) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+    ) {
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Video Feed",
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Text(
+                text = "No video feed",
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     }
 }

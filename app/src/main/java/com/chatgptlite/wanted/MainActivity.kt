@@ -20,14 +20,15 @@ import com.chatgptlite.wanted.ui.NavRoute
 import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
 import com.chatgptlite.wanted.ui.conversations.Conversation
-import com.chatgptlite.wanted.ui.settings.SettingsScreen
-import com.chatgptlite.wanted.ui.settings.MlCModelSettings
-import com.chatgptlite.wanted.ui.settings.MlcModelSettingsViewModel
+import com.chatgptlite.wanted.ui.settings.rover.SettingsScreen
+import com.chatgptlite.wanted.ui.settings.mlc.MlCModelSettings
+import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
 import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chatgptlite.wanted.ui.conversations.ChatView
+import com.chatgptlite.wanted.ui.settings.video.VideoStreamingSetting
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -89,6 +90,12 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(NavRoute.ROVER_SETTINGS)
                                     }
                                 },
+                                onVideoStreamSettingClicked = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        navController.navigate(NavRoute.VIDEO_STREAM)
+                                    }
+                                },
                                 onModelSettingsClicked = {
                                     scope.launch {
                                         drawerState.close()
@@ -109,7 +116,7 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
+                                NavHost(navController = navController, startDestination = NavRoute.VIDEO_STREAM) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
                                             AppBar(onClickMenu = {
@@ -137,6 +144,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable(NavRoute.MLC_CHAT) {
                                         ChatView(navController = navController, chatState = modelViewController.chatState)
+                                    }
+                                    composable(NavRoute.VIDEO_STREAM) {
+                                        VideoStreamingSetting(onBackPressed={
+                                            navController.navigate(NavRoute.HOME)
+                                        })
                                     }
                                 }
                             }

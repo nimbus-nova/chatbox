@@ -1,4 +1,4 @@
-package com.chatgptlite.wanted.ui.settings
+package com.chatgptlite.wanted.ui.settings.mlc
 
 
 import ai.mlc.mlcllm.MLCEngine
@@ -10,13 +10,11 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
-import com.chatgptlite.wanted.models.TextCompletionsParam
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -28,7 +26,6 @@ import kotlin.concurrent.thread
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import com.chatgptlite.wanted.data.llm.OpenAIRepository
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -184,7 +181,7 @@ class MlcModelSettingsViewModel @Inject constructor (
     ) {
         thread(start = true) {
             try {
-                val url = URL("${modelUrl}${ModelUrlSuffix}${ModelConfigFilename}")
+                val url = URL("${modelUrl}$ModelUrlSuffix$ModelConfigFilename")
                 val tempId = UUID.randomUUID().toString()
                 val tempFile = File(
                     application.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS),
@@ -275,7 +272,7 @@ class MlcModelSettingsViewModel @Inject constructor (
 
         private fun downloadParamsConfig() {
             thread(start = true) {
-                val url = URL("${modelUrl}${ModelUrlSuffix}${ParamsConfigFilename}")
+                val url = URL("${modelUrl}$ModelUrlSuffix$ParamsConfigFilename")
                 val tempId = UUID.randomUUID().toString()
                 val tempFile = File(modelDirFile, tempId)
                 url.openStream().use {
@@ -365,7 +362,7 @@ class MlcModelSettingsViewModel @Inject constructor (
                 } else {
                     remainingTasks.add(
                         DownloadTask(
-                            URL("${modelUrl}${ModelUrlSuffix}${tokenizerFilename}"),
+                            URL("${modelUrl}$ModelUrlSuffix${tokenizerFilename}"),
                             file
                         )
                     )
@@ -378,7 +375,7 @@ class MlcModelSettingsViewModel @Inject constructor (
                 } else {
                     remainingTasks.add(
                         DownloadTask(
-                            URL("${modelUrl}${ModelUrlSuffix}${paramsRecord.dataPath}"),
+                            URL("${modelUrl}$ModelUrlSuffix${paramsRecord.dataPath}"),
                             file
                         )
                     )

@@ -1,13 +1,11 @@
-package com.chatgptlite.wanted.ui.settings
+package com.chatgptlite.wanted.ui.settings.rover
 
 import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chatgptlite.wanted.helpers.sendMessage
-import dagger.hilt.android.internal.Contexts.getApplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

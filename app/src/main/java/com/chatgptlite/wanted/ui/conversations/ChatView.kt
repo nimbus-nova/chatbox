@@ -53,7 +53,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -68,9 +67,9 @@ import com.chatgptlite.wanted.permission.PermissionCheck
 import com.chatgptlite.wanted.ui.conversations.components.RecordingDialog
 import com.chatgptlite.wanted.ui.conversations.components.TAG
 import com.chatgptlite.wanted.ui.conversations.components.getFilePath
-import com.chatgptlite.wanted.ui.settings.MessageData
-import com.chatgptlite.wanted.ui.settings.MessageRole
-import com.chatgptlite.wanted.ui.settings.MlcModelSettingsViewModel
+import com.chatgptlite.wanted.ui.settings.mlc.MessageData
+import com.chatgptlite.wanted.ui.settings.mlc.MessageRole
+import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 

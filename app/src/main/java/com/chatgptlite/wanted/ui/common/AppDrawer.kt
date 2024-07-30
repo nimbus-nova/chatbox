@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 fun AppDrawer(
     onModelSettingsClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onVideoStreamSettingClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     conversationViewModel: ConversationViewModel = hiltViewModel(),
@@ -68,6 +69,7 @@ fun AppDrawer(
     AppDrawerIn(
         onModelSettingsClicked = onModelSettingsClicked,
         onRoverSettingsClicked = onSettingsClicked,
+        onVideoStreamSettingClicked = onVideoStreamSettingClicked,
         onChatClicked = onChatClicked,
         onNewChatClicked = onNewChatClicked,
         onIconClicked = onIconClicked,
@@ -90,6 +92,7 @@ fun AppDrawer(
 private fun AppDrawerIn(
     onRoverSettingsClicked: () -> Unit,
     onModelSettingsClicked: () -> Unit,
+    onVideoStreamSettingClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit,
@@ -125,6 +128,7 @@ private fun AppDrawerIn(
         DrawerItemHeader("Settings")
         ChatItem("Rover", Icons.Filled.Accessibility, false) { onRoverSettingsClicked() }
         ChatItem("Models", Icons.Filled.Android, false) { onModelSettingsClicked() }
+        ChatItem("Video Stream", Icons.Filled.Videocam, false) { onVideoStreamSettingClicked() }
     }
 }
 
@@ -396,6 +400,7 @@ fun PreviewAppDrawerIn(
     AppDrawerIn(
         onRoverSettingsClicked = {},
         onModelSettingsClicked = {},
+        onVideoStreamSettingClicked = {},
         onChatClicked = {},
         onNewChatClicked = {},
         onIconClicked = {},
