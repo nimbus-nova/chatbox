@@ -19,6 +19,7 @@ fun AppScaffold(
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
     onModelSettingsClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onVideoStreamSettingClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit = {},
@@ -38,6 +39,7 @@ fun AppScaffold(
                 AppDrawer(
                     onSettingsClicked = onSettingsClicked,
                     onChatClicked = onChatClicked,
+                    onVideoStreamSettingClicked = onVideoStreamSettingClicked,
                     onNewChatClicked = onNewChatClicked,
                     onIconClicked = onIconClicked,
                     onModelSettingsClicked = onModelSettingsClicked,

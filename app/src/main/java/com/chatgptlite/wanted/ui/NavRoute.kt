@@ -5,4 +5,5 @@ object NavRoute {
     const val ROVER_SETTINGS = "rover_settings"
     const val MLC_SETTINGS = "mlc_settings"
     const val MLC_CHAT = "mlc_chat"
+    const val VIDEO_STREAM = "video_stream"
 }
