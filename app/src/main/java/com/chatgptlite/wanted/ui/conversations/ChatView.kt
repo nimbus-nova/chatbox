@@ -1,31 +1,51 @@
 package com.chatgptlite.wanted.ui.conversations
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.chatgptlite.wanted.ui.conversations.components.RecordingDialog
+import com.chatgptlite.wanted.ui.settings.mlc.MessageData
+import com.chatgptlite.wanted.ui.settings.mlc.MessageRole
+import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
+import com.chatgptlite.wanted.ui.settings.video.VideoCamSettingsViewModel
+import com.chatgptlite.wanted.ui.settings.video.VideoFeedDisplay
+import kotlinx.coroutines.launch
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.HideImage
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -33,29 +53,15 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import com.chatgptlite.wanted.constants.debugMode
 import com.chatgptlite.wanted.data.whisper.asr.IRecorderListener
 import com.chatgptlite.wanted.data.whisper.asr.IWhisperListener
@@ -64,97 +70,52 @@ import com.chatgptlite.wanted.data.whisper.asr.Whisper
 import com.chatgptlite.wanted.data.whisper.utils.WaveUtil
 import com.chatgptlite.wanted.helpers.AudioPlayer
 import com.chatgptlite.wanted.permission.PermissionCheck
-import com.chatgptlite.wanted.ui.conversations.components.RecordingDialog
-import com.chatgptlite.wanted.ui.conversations.components.TAG
-import com.chatgptlite.wanted.ui.conversations.components.getFilePath
-import com.chatgptlite.wanted.ui.settings.mlc.MessageData
-import com.chatgptlite.wanted.ui.settings.mlc.MessageRole
-import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
-import kotlinx.coroutines.launch
 import java.io.File
 
-@ExperimentalMaterial3Api
 @Composable
 fun ChatView(
-    navController: NavController, chatState: MlcModelSettingsViewModel.ChatState
+    viewModel: VideoCamSettingsViewModel,
+    chatState: MlcModelSettingsViewModel.ChatState
 ) {
-    val localFocusManager = LocalFocusManager.current
-    Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "MLCChat: " + chatState.modelName.value.split("-")[0],
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-            navigationIcon = {
-                IconButton(
-                    onClick = { navController.popBackStack() },
-                    enabled = chatState.interruptable()
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "back home page",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            },
-            actions = {
-                IconButton(
-                    onClick = { chatState.requestResetChat() },
-                    enabled = chatState.interruptable()
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Replay,
-                        contentDescription = "reset the chat",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            })
-    }, modifier = Modifier.pointerInput(Unit) {
-        detectTapGestures(onTap = {
-            localFocusManager.clearFocus()
-        })
-    }) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 10.dp)
-        ) {
-            val lazyColumnListState = rememberLazyListState()
-            val coroutineScope = rememberCoroutineScope()
-            Text(
-                text = chatState.report.value,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(top = 5.dp)
-            )
-            Divider(thickness = 1.dp, modifier = Modifier.padding(vertical = 5.dp))
-            LazyColumn(
-                modifier = Modifier.weight(9f),
-                verticalArrangement = Arrangement.spacedBy(5.dp, alignment = Alignment.Bottom),
-                state = lazyColumnListState
-            ) {
-                coroutineScope.launch {
-                    lazyColumnListState.animateScrollToItem(chatState.messages.size)
-                }
-                items(
-                    items = chatState.messages,
-                    key = { message -> message.id },
-                ) { message ->
-                    MessageView(messageData = message)
-                }
-                item {
-                    // place holder item for scrolling to the bottom
-                }
-            }
-            Divider(thickness = 1.dp, modifier = Modifier.padding(top = 5.dp))
-            SendMessageView(chatState = chatState)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(0.dp)
+    ) {
+        val lazyColumnListState = rememberLazyListState()
+        val coroutineScope = rememberCoroutineScope()
+        var isShowingVideoStream by remember { mutableStateOf(false) }
+        if (isShowingVideoStream) {
+            VideoFeedDisplay(viewModel.currentFrame.value)
         }
+        LazyColumn(
+            modifier = Modifier.weight(9f),
+            verticalArrangement = Arrangement.spacedBy(5.dp, alignment = Alignment.Bottom),
+            state = lazyColumnListState
+        ) {
+            coroutineScope.launch {
+                lazyColumnListState.animateScrollToItem(chatState.messages.size)
+            }
+            items(
+                items = chatState.messages,
+                key = { message -> message.id },
+            ) { message ->
+                MessageView(messageData = message)
+            }
+            item {
+                // place holder item for scrolling to the bottom
+            }
+        }
+        TextInput(
+            chatState,
+            isShowingVideoStream,
+            clickVideoStream = {
+                isShowingVideoStream = !isShowingVideoStream
+            },
+            sendMessage = {
+               chatState.requestGenerate(it)
+            }
+        )
     }
 }
 
@@ -205,19 +166,36 @@ fun MessageView(messageData: MessageData) {
     }
 }
 
-@ExperimentalMaterial3Api
+val TAG = "TextInput"
+
+fun getFilePath(context: Context, assetName: String): String {
+    val outfile = File(context.filesDir, assetName);
+    if (!outfile.exists()) {
+        Log.d(TAG, "File not found - " + outfile.absolutePath)
+    }
+
+    Log.d(TAG, "Returned asset path: " + outfile.absolutePath)
+    return outfile.absolutePath
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SendMessageView(chatState: MlcModelSettingsViewModel.ChatState) {
-    val localFocusManager = LocalFocusManager.current
+private fun TextInput(
+    chatState: MlcModelSettingsViewModel.ChatState?,
+    isShowVideoStream: Boolean,
+    clickVideoStream: () -> Unit,
+    sendMessage: (String) -> Unit,
+) {
     val scope = rememberCoroutineScope()
+    var text by remember { mutableStateOf(TextFieldValue("")) }
     var showVoiceInputPrompt by remember { mutableStateOf(false) }
-    var text by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val audioPlayer = remember { AudioPlayer() }
     val permissionCheck = remember { PermissionCheck(context) }
     var isRecording by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(false) }
     var showPermissionDialog by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
     val useMultilingual by remember { mutableStateOf(false) }
     var modelPath by remember { mutableStateOf("") }
     var vocabPath by remember { mutableStateOf("") }
@@ -225,7 +203,6 @@ fun SendMessageView(chatState: MlcModelSettingsViewModel.ChatState) {
     else getFilePath(context, "whisper-tiny-en.tflite")
     vocabPath = if (useMultilingual) getFilePath(context, "filters_vocab_multilingual.bin")
     else getFilePath(context, "filters_vocab_en.bin")
-    val focusRequester = remember { FocusRequester() }
     val waveFilePath = remember {
         getFilePath(context, WaveUtil.RECORDING_FILE)
     }
@@ -239,14 +216,14 @@ fun SendMessageView(chatState: MlcModelSettingsViewModel.ChatState) {
 
                 override fun onResultReceived(result: String?) {
                     Log.d(TAG, "onResultReceived: $result")
-                    text = result.orEmpty()
+                    text = TextFieldValue(result ?: "")
                 }
             })
         }
     }
     val record = remember {
         Recorder(context).apply {
-            setListener(object : IRecorderListener {
+            setListener(object : IRecorderListener{
                 override fun onUpdateReceived(message: String) {
                     Log.d(TAG, "onUpdateReceived: $message")
                     if (message.contains("done")) {
@@ -265,82 +242,120 @@ fun SendMessageView(chatState: MlcModelSettingsViewModel.ChatState) {
             })
         }
     }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically,
+
+    Box(
+        // Use navigationBarsPadding() imePadding() and , to move the input panel above both the
+        // navigation bar, and on-screen keyboard (IME)
         modifier = Modifier
-            .height(IntrinsicSize.Max)
-            .fillMaxWidth()
-            .padding(bottom = 5.dp)
+            .navigationBarsPadding()
+            .imePadding(),
     ) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            label = { Text(text = "Input") },
-            modifier = Modifier
-                .weight(9f)
-                .focusRequester(focusRequester),
-        )
-        IconButton(
-            onClick = {
-                localFocusManager.clearFocus()
-                chatState.requestGenerate(text)
-                text = ""
-            },
-            modifier = Modifier
-                .aspectRatio(1f)
-                .weight(1f),
-            enabled = (text != "" && chatState.chatable())
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "send message",
-            )
-        }
-        IconButton(
-            onClick = {
-                permissionCheck.checkAudioRecordingPermission(
-                    onPermissionGranted = {
-                        showVoiceInputPrompt = true
-                        isRecording = true
-                        text = ""
-                        record.setFilePath(waveFilePath)
-                        record.start()
-                    },
-                    onPermissionDenied = {
-                        showPermissionDialog = true
+        Column {
+            Divider(Modifier.height(0.2.dp))
+            Box(
+                Modifier
+                    .padding(horizontal = 4.dp)
+                    .padding(top = 6.dp, bottom = 10.dp)
+            ) {
+                Row {
+                    TextField(
+                        value = text,
+                        onValueChange = {
+                            text = it
+                        },
+                        label = null,
+                        placeholder = { Text("Ask me anything", fontSize = 12.sp) },
+                        shape = RoundedCornerShape(25.dp),
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp)
+                            .weight(1f),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                        ),
+                    )
+                    IconButton(
+                        onClick = {
+                            if (text.text != "" && chatState?.chatable() == true) {
+                                scope.launch {
+                                    val textClone = text.text
+                                    text = TextFieldValue("")
+                                    sendMessage(textClone)
+                                }
+                            }
+                            else {
+                                Toast.makeText(context, "Please wait for the chat model ready", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    ) {
+                        Icon(
+                            Icons.Filled.Send,
+                            "sendMessage",
+                            modifier = Modifier.size(26.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
                     }
-                )
-            },
-        ) {
-            Icon(
-                Icons.Filled.Mic,
-                "voiceInput",
-                modifier = Modifier.size(26.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-        if (debugMode) {
-            IconButton(
-                onClick = {
-                    if (isPlaying) {
-                        audioPlayer.stopPlaying()
-                        isPlaying = false
-                    } else {
-                        audioPlayer.startPlaying(File(waveFilePath))
-                        isPlaying = true
-                        scope.launch {
-                            isPlaying = false
+                    IconButton(
+                        onClick = {
+                            permissionCheck.checkAudioRecordingPermission(
+                                onPermissionGranted = {
+                                    showVoiceInputPrompt = true
+                                    isRecording = true
+                                    text = TextFieldValue("")
+                                    record.setFilePath(waveFilePath)
+                                    record.start()
+                                },
+                                onPermissionDenied = {
+                                    showPermissionDialog = true
+                                }
+                            )
+                        },
+                    ) {
+                        Icon(
+                            Icons.Filled.Mic,
+                            "voiceInput",
+                            modifier = Modifier.size(26.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                    if (debugMode) {
+                        IconButton(
+                            onClick = {
+                                if (isPlaying) {
+                                    audioPlayer.stopPlaying()
+                                    isPlaying = false
+                                } else {
+                                    audioPlayer.startPlaying(File(waveFilePath))
+                                    isPlaying = true
+                                    scope.launch {
+                                        isPlaying = false
+                                    }
+                                }
+                            },
+                            enabled = !isRecording
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = if (isPlaying) "stop" else "play",
+                                tint = if (isPlaying) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                            )
                         }
                     }
-                },
-                enabled = !isRecording
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.PlayArrow,
-                    contentDescription = if (isPlaying) "stop" else "play",
-                    tint = if (isPlaying) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
-                )
+                    IconButton(
+                        onClick = {
+                            clickVideoStream()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = if (isShowVideoStream) Icons.Filled.HideImage else Icons.Filled.Image,
+                            contentDescription = "hide video stream",
+                            tint = if (isShowVideoStream) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         }
     }
@@ -377,4 +392,16 @@ fun SendMessageView(chatState: MlcModelSettingsViewModel.ChatState) {
             }
         )
     }
+}
+
+@Preview()
+@Composable
+fun PreviewTextInput(
+) {
+    TextInput(
+        chatState = null,
+        isShowVideoStream = false,
+        clickVideoStream = {},
+        sendMessage = {}
+    )
 }
