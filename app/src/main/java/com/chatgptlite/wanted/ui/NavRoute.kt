@@ -4,6 +4,6 @@ object NavRoute {
     const val HOME = "home"
     const val ROVER_SETTINGS = "rover_settings"
     const val MLC_SETTINGS = "mlc_settings"
-    const val MLC_CHAT = "mlc_chat"
+    const val OPEN_AI_PAGE = "open_ai"
     const val VIDEO_STREAM = "video_stream"
 }

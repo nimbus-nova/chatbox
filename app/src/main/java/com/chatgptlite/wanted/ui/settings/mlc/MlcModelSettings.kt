@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -30,8 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +42,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.chatgptlite.wanted.ui.NavRoute
+import com.chatgptlite.wanted.ui.common.AppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,14 +54,9 @@ fun MlCModelSettings(
     val localFocusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = "Choose Model", color = MaterialTheme.colorScheme.onPrimary) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            AppBar(
+                title = "Choose Model",
+                onBackPressed = onBackPressed
             )
         },
         modifier = Modifier.pointerInput(Unit) {
@@ -180,7 +173,7 @@ fun ModelView(
             } else if (modelState.modelInitState.value == ModelInitState.Finished) {
                 IconButton(
                     onClick = {
-                        navController.navigate(NavRoute.MLC_CHAT)
+                        navController.navigate(NavRoute.HOME)
                         modelState.run { startChat() }
                     },
 //                    enabled = modelViewController.chatState.interruptable(),
