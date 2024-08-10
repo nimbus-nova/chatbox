@@ -109,8 +109,9 @@ fun ChatView(
         TextInput(
             chatState,
             isShowingVideoStream,
-            clickVideoStream = {
-                isShowingVideoStream = !isShowingVideoStream
+            setVideoStreamShow = {enable: Boolean ->
+                Log.d("ChatView", "setVideoStreamShow: $enable")
+                isShowingVideoStream = enable
             },
             sendMessage = {
                chatState.requestGenerate(it)
@@ -183,7 +184,7 @@ fun getFilePath(context: Context, assetName: String): String {
 private fun TextInput(
     chatState: MlcModelSettingsViewModel.ChatState?,
     isShowVideoStream: Boolean,
-    clickVideoStream: () -> Unit,
+    setVideoStreamShow: (enable: Boolean) -> Unit,
     sendMessage: (String) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
@@ -280,6 +281,7 @@ private fun TextInput(
                     IconButton(
                         onClick = {
                             if (text.text != "" && chatState?.chatable() == true) {
+                                setVideoStreamShow(false)
                                 scope.launch {
                                     val textClone = text.text
                                     text = TextFieldValue("")
@@ -346,7 +348,7 @@ private fun TextInput(
                     }
                     IconButton(
                         onClick = {
-                            clickVideoStream()
+                            setVideoStreamShow(!isShowVideoStream)
                         }
                     ) {
                         Icon(
@@ -401,7 +403,7 @@ fun PreviewTextInput(
     TextInput(
         chatState = null,
         isShowVideoStream = false,
-        clickVideoStream = {},
+        setVideoStreamShow = {},
         sendMessage = {}
     )
 }
