@@ -1,5 +1,10 @@
 ## Quick Start
 
+0. clone the repo down by using
+
+```
+git clone --recurse-submodules git@github.com:nimbus-nova/chatbox.git
+```
 1. Follow below to get MLC working
 https://llm.mlc.ai/docs/deploy/android.html
 
@@ -27,3 +32,4 @@ to
 ```
     id 'org.jetbrains.kotlin.plugin.serialization'
 ```
+

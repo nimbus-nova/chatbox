@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.VIDEO_STREAM) {
+                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
                                             AppBar(modelViewController.chatState) {
