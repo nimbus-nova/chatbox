@@ -19,7 +19,6 @@ import androidx.navigation.compose.rememberNavController
 import com.chatgptlite.wanted.ui.NavRoute
 import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
-import com.chatgptlite.wanted.ui.conversations.Conversation
 import com.chatgptlite.wanted.ui.settings.rover.SettingsScreen
 import com.chatgptlite.wanted.ui.settings.mlc.MlCModelSettings
 import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
@@ -28,6 +27,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chatgptlite.wanted.ui.conversations.ChatView
+import com.chatgptlite.wanted.ui.conversations.Conversation
+import com.chatgptlite.wanted.ui.settings.video.VideoCamSettingsViewModel
 import com.chatgptlite.wanted.ui.settings.video.VideoStreamingSetting
 
 @AndroidEntryPoint
@@ -49,6 +50,7 @@ class MainActivity : ComponentActivity() {
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by mainViewModel.drawerShouldBeOpened.collectAsState()
                     val modelViewController = viewModel<MlcModelSettingsViewModel>()
+                    val videoStreamVideoController = viewModel<VideoCamSettingsViewModel>()
 
                     if (drawerOpen) {
                         // Open drawer and reset state in VM.
@@ -116,14 +118,14 @@ class MainActivity : ComponentActivity() {
                                     darkTheme.value = !darkTheme.value
                                 }
                             ) {
-                                NavHost(navController = navController, startDestination = NavRoute.VIDEO_STREAM) {
+                                NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
-                                            AppBar(onClickMenu = {
+                                            AppBar(modelViewController.chatState) {
                                                 scope.launch { drawerState.open() }
-                                            })
+                                            }
                                             Divider()
-                                            Conversation()
+                                            ChatView(videoStreamVideoController, modelViewController.chatState)
                                         }
                                     }
                                     composable(NavRoute.ROVER_SETTINGS) {
@@ -142,13 +144,19 @@ class MainActivity : ComponentActivity() {
                                             }
                                         )
                                     }
-                                    composable(NavRoute.MLC_CHAT) {
-                                        ChatView(navController = navController, chatState = modelViewController.chatState)
+                                    composable(NavRoute.OPEN_AI_PAGE) {
+                                        Column(modifier = Modifier.fillMaxSize()) {
+                                            AppBar(onClickMenu = {
+                                                scope.launch { drawerState.open() }
+                                            })
+                                            Divider()
+                                            Conversation()
+                                        }
                                     }
                                     composable(NavRoute.VIDEO_STREAM) {
-                                        VideoStreamingSetting(onBackPressed={
+                                        VideoStreamingSetting(videoStreamVideoController) {
                                             navController.navigate(NavRoute.HOME)
-                                        })
+                                        }
                                     }
                                 }
                             }

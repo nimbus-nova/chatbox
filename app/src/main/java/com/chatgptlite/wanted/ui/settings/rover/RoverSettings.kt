@@ -1,8 +1,6 @@
 package com.chatgptlite.wanted.ui.settings.rover
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.chatgptlite.wanted.ui.common.AppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,13 +39,9 @@ fun SettingsScreen(onBackPressed: () -> Unit) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+            AppBar(
+                title = "Rover Settings",
+                onBackPressed = onBackPressed
             )
         }
     ) { innerPadding ->

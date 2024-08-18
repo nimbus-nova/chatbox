@@ -1,0 +1,16 @@
+{
+  "model_list": [
+    {
+      "model_id": "Llama-3-8B-Instruct-q3f16_1-MLC",
+      "model_lib": "llama_q3f16_1_c72f3c281b17cff64f9d24a5e4fcd85f",
+      "model_url": "https://huggingface.co/mlc-ai/Llama-3-8B-Instruct-q3f16_1-MLC",
+      "estimated_vram_bytes": 4679979417
+    },
+    {
+      "model_id": "go2_mlc",
+      "model_lib": "go2_mlc",
+      "model_url": "https://huggingface.co/Andyfanfan/go2_mlc",
+      "estimated_vram_bytes": 4679979417
+    }
+  ]
+}
