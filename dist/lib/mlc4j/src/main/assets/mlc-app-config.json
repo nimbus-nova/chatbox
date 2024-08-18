@@ -8,7 +8,7 @@
     },
     {
       "model_id": "go2_mlc",
-      "model_lib": "go2_mlc",
+      "model_lib": "llama_q4f16_1_15cd28b6035042d822b029e44c5c911b",
       "model_url": "https://huggingface.co/Andyfanfan/go2_mlc",
       "estimated_vram_bytes": 4679979417
     }
