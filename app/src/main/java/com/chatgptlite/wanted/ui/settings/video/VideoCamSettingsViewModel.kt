@@ -40,6 +40,29 @@ class VideoCamSettingsViewModel : ViewModel() {
             }
         }
     }
+
+    fun saveConfig(ipAddress: String, port: String, route: String) {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("CameraSetting", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("ipAddress", ipAddress)
+            putString("port", port)
+            putString("route", textToSend)
+            apply()
+        }
+        Log.i("CameraSettingsViewModel", "Config saved: $ipAddress:$port -> $textToSend")
+    }
+    fun loadConfig(): CameraConfig? {
+        val sharedPreferences = getApplication<Application>().getSharedPreferences("CameraSetting", Context.MODE_PRIVATE)
+        val ipAddress = sharedPreferences.getString("ipAddress", null)
+        val port = sharedPreferences.getString("port", null)
+        val route = sharedPreferences.getString("route", null)
+
+        return if (ipAddress != null && port != null && route != null) {
+            CameraConfig(ipAddress, port, route)
+        } else {
+            null
+        }
+    }
 }
 
 class MjpegReader(private val input: java.io.InputStream) {
@@ -71,3 +94,9 @@ class MjpegReader(private val input: java.io.InputStream) {
         }
     }
 }
+
+data class CameraConfig(
+    val ipAddress: String,
+    val port: String,
+    val route: String
+)

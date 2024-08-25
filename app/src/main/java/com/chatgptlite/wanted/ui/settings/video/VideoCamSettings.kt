@@ -37,12 +37,21 @@ fun VideoStreamingSetting(
     viewModel: VideoCamSettingsViewModel,
     onBackPressed: () -> Unit
 ) {
-    var ipAddress by remember { mutableStateOf("10.0.0.9") }
+    var ipAddress by remember { mutableStateOf("10.0.0.1") }
     var port by remember {
-        mutableStateOf("8000")
+        mutableStateOf("8080")
     }
     var route by remember {
-        mutableStateOf("/v1/video")
+        mutableStateOf("/stream?topic=/camera/image_raw&type=ros_compressed")
+    }
+
+    LaunchedEffect(Unit) {
+        val config = viewModel.loadConfig()
+        config?.let {
+            ipAddress = it.ipAddress
+            port = it.port
+            route = it.route
+        }
     }
 
     Scaffold(
@@ -106,6 +115,19 @@ fun VideoStreamingSetting(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { viewModel.saveConfig(ipAddress, port, route) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Save Config")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+            }
         }
     }
 }
