@@ -2,13 +2,13 @@
   "model_list": [
     {
       "model_id": "Llama-3-8B-Instruct-q3f16_1-MLC",
-      "model_lib": "llama_q3f16_1_c72f3c281b17cff64f9d24a5e4fcd85f",
+      "model_lib": "llama_q3f16_1_b065a3dc3645c9163484362c481ac37f",
       "model_url": "https://huggingface.co/mlc-ai/Llama-3-8B-Instruct-q3f16_1-MLC",
       "estimated_vram_bytes": 4679979417
     },
     {
       "model_id": "go2_mlc",
-      "model_lib": "llama_q4f16_1_15cd28b6035042d822b029e44c5c911b",
+      "model_lib": "llama_q4f16_1_1f0bc40f3532962f1ec6f86d02673443",
       "model_url": "https://huggingface.co/Andyfanfan/go2_mlc",
       "estimated_vram_bytes": 4679979417
     }

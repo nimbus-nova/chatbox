@@ -536,6 +536,18 @@ class MlcModelSettingsViewModel @Inject constructor (
             report.value = ""
         }
 
+        var extraPrompt = """here are what you have
+return_to_base.py
+go_forward.py
+go_backward.py
+stop.py
+
+user says: 
+{content}
+
+which file should you use, add python in front of it. Don't say anything else
+""".trimIndent()
+
 
         private fun switchToResetting() {
             modelChatState.value = ModelChatState.Resetting
@@ -684,7 +696,7 @@ class MlcModelSettingsViewModel @Inject constructor (
                         messages = listOf(
                             OpenAIProtocol.ChatCompletionMessage(
                                 role = OpenAIProtocol.ChatCompletionRole.user,
-                                content = prompt
+                                content = extraPrompt.replace("{content}", prompt)
                             )
                         ),
                         stream_options = OpenAIProtocol.StreamOptions(include_usage = true)
@@ -719,6 +731,10 @@ class MlcModelSettingsViewModel @Inject constructor (
 
         fun chatable(): Boolean {
             return modelChatState.value == ModelChatState.Ready
+        }
+
+        fun isFail(): Boolean {
+            return modelChatState.value == ModelChatState.Falied
         }
 
         fun interruptable(): Boolean {

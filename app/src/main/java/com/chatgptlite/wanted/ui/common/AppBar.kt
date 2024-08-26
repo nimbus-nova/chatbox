@@ -28,7 +28,7 @@ import com.chatgptlite.wanted.ui.theme.BackGroundColor
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    chatState: MlcModelSettingsViewModel.ChatState? = null,
+    mlcModelSettingsViewModel: MlcModelSettingsViewModel? = null,
     onClickMenu: () -> Unit
 ) {
     ChatGPTLiteTheme() {
@@ -65,7 +65,7 @@ fun AppBar(
                         onClick = {
                             onClickMenu()
                         },
-                        enabled = chatState?.interruptable() == true
+                        enabled = mlcModelSettingsViewModel?.chatState?.interruptable() == true
                     ) {
                         Icon(
                             Icons.Filled.Menu,
@@ -81,8 +81,8 @@ fun AppBar(
                 ),
                 actions = {
                     IconButton(
-                        onClick = { chatState?.requestResetChat() },
-                        enabled = chatState?.interruptable() == true
+                        onClick = { mlcModelSettingsViewModel?.chatState?.requestResetChat() },
+                        enabled = mlcModelSettingsViewModel?.chatState?.interruptable() == true
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Replay,

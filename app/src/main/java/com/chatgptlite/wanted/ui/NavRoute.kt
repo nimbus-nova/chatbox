@@ -6,4 +6,5 @@ object NavRoute {
     const val MLC_SETTINGS = "mlc_settings"
     const val OPEN_AI_PAGE = "open_ai"
     const val VIDEO_STREAM = "video_stream"
+    const val PROMPT_SETTINGS = "prompt_settings"
 }

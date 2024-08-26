@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,13 +22,14 @@ import com.chatgptlite.wanted.ui.common.AppBar
 import com.chatgptlite.wanted.ui.common.AppScaffold
 import com.chatgptlite.wanted.ui.settings.rover.SettingsScreen
 import com.chatgptlite.wanted.ui.settings.mlc.MlCModelSettings
-import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
 import com.chatgptlite.wanted.ui.theme.ChatGPTLiteTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.chatgptlite.wanted.ui.conversations.ChatView
 import com.chatgptlite.wanted.ui.conversations.Conversation
+import com.chatgptlite.wanted.ui.settings.mlc.MlcModelSettingsViewModel
+import com.chatgptlite.wanted.ui.settings.prompt.PromptSettingPage
+import com.chatgptlite.wanted.ui.settings.rover.RoverSettingsViewModel
 import com.chatgptlite.wanted.ui.settings.video.VideoCamSettingsViewModel
 import com.chatgptlite.wanted.ui.settings.video.VideoStreamingSetting
 
@@ -36,7 +38,6 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,8 +50,9 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
                     val drawerOpen by mainViewModel.drawerShouldBeOpened.collectAsState()
-                    val modelViewController = viewModel<MlcModelSettingsViewModel>()
-                    val videoStreamVideoController = viewModel<VideoCamSettingsViewModel>()
+                    val mlcModelSettingsViewModel = viewModel<MlcModelSettingsViewModel>()
+                    val videoCamSettingsViewModel = viewModel<VideoCamSettingsViewModel>()
+                    val roverViewModel = viewModel<RoverSettingsViewModel>()
 
                     if (drawerOpen) {
                         // Open drawer and reset state in VM.
@@ -104,6 +106,12 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate(NavRoute.MLC_SETTINGS)
                                     }
                                 },
+                                onPromptSettingClicked = {
+                                    scope.launch {
+                                        drawerState.close()
+                                        navController.navigate(NavRoute.PROMPT_SETTINGS)
+                                    }
+                                },
                                 onChatClicked = {
                                     scope.launch {
                                         drawerState.close()
@@ -121,16 +129,17 @@ class MainActivity : ComponentActivity() {
                                 NavHost(navController = navController, startDestination = NavRoute.MLC_SETTINGS) {
                                     composable(NavRoute.HOME) {
                                         Column(modifier = Modifier.fillMaxSize()) {
-                                            AppBar(modelViewController.chatState) {
+                                            AppBar(mlcModelSettingsViewModel) {
                                                 scope.launch { drawerState.open() }
                                             }
                                             Divider()
-                                            ChatView(videoStreamVideoController, modelViewController.chatState)
+                                            ChatView(videoCamSettingsViewModel, mlcModelSettingsViewModel)
                                         }
                                     }
                                     composable(NavRoute.ROVER_SETTINGS) {
                                         SettingsScreen(
-                                            onBackPressed={
+                                            roverViewModel,
+                                            onBackPressed = {
                                                 navController.navigate(NavRoute.HOME)
                                             }
                                         )
@@ -138,7 +147,7 @@ class MainActivity : ComponentActivity() {
                                     composable(NavRoute.MLC_SETTINGS) {
                                         MlCModelSettings(
                                             navController = navController,
-                                            modelViewController = modelViewController,
+                                            mlcViewController = mlcModelSettingsViewModel,
                                             onBackPressed = {
                                                 navController.navigate(NavRoute.HOME)
                                             }
@@ -146,15 +155,23 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable(NavRoute.OPEN_AI_PAGE) {
                                         Column(modifier = Modifier.fillMaxSize()) {
-                                            AppBar(onClickMenu = {
-                                                scope.launch { drawerState.open() }
-                                            })
+                                            AppBar(
+                                                mlcModelSettingsViewModel = mlcModelSettingsViewModel,
+                                                onClickMenu = {
+                                                    scope.launch { drawerState.open() }
+                                                }
+                                            )
                                             Divider()
                                             Conversation()
                                         }
                                     }
                                     composable(NavRoute.VIDEO_STREAM) {
-                                        VideoStreamingSetting(videoStreamVideoController) {
+                                        VideoStreamingSetting(videoCamSettingsViewModel) {
+                                            navController.navigate(NavRoute.HOME)
+                                        }
+                                    }
+                                    composable(NavRoute.PROMPT_SETTINGS) {
+                                        PromptSettingPage(mlcModelSettingsViewModel) {
                                             navController.navigate(NavRoute.HOME)
                                         }
                                     }

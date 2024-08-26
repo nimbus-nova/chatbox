@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 //import androidx.compose.material3.ModalDrawerSheet
 
 @SuppressLint("CoroutineCreationDuringComposition")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(
     drawerState: DrawerState = rememberDrawerState(initialValue = Closed),
@@ -23,6 +22,7 @@ fun AppScaffold(
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit = {},
+    onPromptSettingClicked: () -> Unit = {},
     conversationViewModel: ConversationViewModel = hiltViewModel(),
     content: @Composable () -> Unit,
 ) {
@@ -43,6 +43,7 @@ fun AppScaffold(
                     onNewChatClicked = onNewChatClicked,
                     onIconClicked = onIconClicked,
                     onModelSettingsClicked = onModelSettingsClicked,
+                    onPromptSettingClicked = onPromptSettingClicked
                 )
             }
         },

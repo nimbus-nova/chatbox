@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -75,7 +76,7 @@ import java.io.File
 @Composable
 fun ChatView(
     viewModel: VideoCamSettingsViewModel,
-    chatState: MlcModelSettingsViewModel.ChatState
+    mlcModelSettingsViewModelhatState: MlcModelSettingsViewModel
 ) {
     Column(
         modifier = Modifier
@@ -94,27 +95,27 @@ fun ChatView(
             state = lazyColumnListState
         ) {
             coroutineScope.launch {
-                lazyColumnListState.animateScrollToItem(chatState.messages.size)
+                lazyColumnListState.animateScrollToItem(mlcModelSettingsViewModelhatState.chatState.messages.size)
             }
             items(
-                items = chatState.messages,
+                items = mlcModelSettingsViewModelhatState.chatState.messages,
                 key = { message -> message.id },
             ) { message ->
-                MessageView(messageData = message)
+                MessageView(roverSettingsViewModel, messageData = message)
             }
             item {
                 // place holder item for scrolling to the bottom
             }
         }
         TextInput(
-            chatState,
+            mlcModelSettingsViewModelhatState.chatState,
             isShowingVideoStream,
             setVideoStreamShow = {enable: Boolean ->
                 Log.d("ChatView", "setVideoStreamShow: $enable")
                 isShowingVideoStream = enable
             },
             sendMessage = {
-               chatState.requestGenerate(it)
+                mlcModelSettingsViewModelhatState.chatState.requestGenerate(it)
             }
         )
     }
@@ -122,6 +123,7 @@ fun ChatView(
 
 @Composable
 fun MessageView(messageData: MessageData) {
+    val context = LocalContext.current
     SelectionContainer {
         if (messageData.role == MessageRole.Assistant) {
             Row(
@@ -140,6 +142,9 @@ fun MessageView(messageData: MessageData) {
                         )
                         .padding(5.dp)
                         .widthIn(max = 300.dp)
+                        .clickable(true) {
+                            Toast.makeText(context, "Send Command", Toast.LENGTH_SHORT).show()
+                        }
                 )
 
             }
@@ -287,6 +292,9 @@ private fun TextInput(
                                     text = TextFieldValue("")
                                     sendMessage(textClone)
                                 }
+                            }
+                            else if (chatState?.isFail() == true) {
+                                Toast.makeText(context, "Please load model first", Toast.LENGTH_SHORT).show()
                             }
                             else {
                                 Toast.makeText(context, "Please wait for the chat model ready", Toast.LENGTH_SHORT).show()

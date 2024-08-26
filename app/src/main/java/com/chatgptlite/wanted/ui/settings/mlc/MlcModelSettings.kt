@@ -48,7 +48,7 @@ import com.chatgptlite.wanted.ui.common.AppBar
 @Composable
 fun MlCModelSettings(
     navController: NavController,
-    modelViewController: MlcModelSettingsViewModel,
+    mlcViewController: MlcModelSettingsViewModel,
     onBackPressed: () -> Unit
 ) {
     val localFocusManager = LocalFocusManager.current
@@ -74,23 +74,23 @@ fun MlCModelSettings(
         ) {
 //            Text(text = "Model List", modifier = Modifier.padding(top = 10.dp))
             LazyColumn() {
-                items(items = modelViewController.modelList,
+                items(items = mlcViewController.modelList,
                     key = { modelState -> modelState.id }
                 ) { modelState ->
                     Spacer(modifier = Modifier.width(8.dp))
                     ModelView(
                         navController = navController,
                         modelState = modelState,
-                        modelViewController = modelViewController
+                        modelViewController = mlcViewController
                     )
                 }
             }
         }
-        if (modelViewController.isShowingAlert()) {
+        if (mlcViewController.isShowingAlert()) {
             AlertDialog(
-                onDismissRequest = { modelViewController.dismissAlert() },
-                onConfirmation = { modelViewController.copyError() },
-                error = modelViewController.errorMessage()
+                onDismissRequest = { mlcViewController.dismissAlert() },
+                onConfirmation = { mlcViewController.copyError() },
+                error = mlcViewController.errorMessage()
             )
         }
     }

@@ -40,7 +40,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,6 +61,7 @@ fun AppDrawer(
     onVideoStreamSettingClicked: () -> Unit,
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
+    onPromptSettingClicked: () -> Unit = {},
     conversationViewModel: ConversationViewModel = hiltViewModel(),
     onIconClicked: () -> Unit = {}
 ) {
@@ -70,6 +70,7 @@ fun AppDrawer(
         onModelSettingsClicked = onModelSettingsClicked,
         onRoverSettingsClicked = onSettingsClicked,
         onVideoStreamSettingClicked = onVideoStreamSettingClicked,
+        onPromptSettingClicked = onPromptSettingClicked,
         onChatClicked = onChatClicked,
         onNewChatClicked = onNewChatClicked,
         onIconClicked = onIconClicked,
@@ -93,6 +94,7 @@ private fun AppDrawerIn(
     onRoverSettingsClicked: () -> Unit,
     onModelSettingsClicked: () -> Unit,
     onVideoStreamSettingClicked: () -> Unit,
+    onPromptSettingClicked: () -> Unit = {},
     onChatClicked: (String) -> Unit,
     onNewChatClicked: () -> Unit,
     onIconClicked: () -> Unit,
@@ -102,8 +104,6 @@ private fun AppDrawerIn(
     currentConversationState: String,
     conversationState: MutableList<ConversationModel>,
 ) {
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -129,6 +129,7 @@ private fun AppDrawerIn(
         ChatItem("Rover", Icons.Filled.Accessibility, false) { onRoverSettingsClicked() }
         ChatItem("Models", Icons.Filled.Android, false) { onModelSettingsClicked() }
         ChatItem("Video Stream", Icons.Filled.Videocam, false) { onVideoStreamSettingClicked() }
+        ChatItem("Prompt Settings", Icons.Filled.Settings, false) { onPromptSettingClicked() }
     }
 }
 
@@ -345,9 +346,11 @@ private fun RecycleChatItem(
             } else {
                 MaterialTheme.colorScheme.onSurface
             },
-            modifier = Modifier.padding(
-                end = 12.dp
-            ).clickable { onDeleteClicked() }
+            modifier = Modifier
+                .padding(
+                    end = 12.dp
+                )
+                .clickable { onDeleteClicked() }
         )
     }
 }
@@ -401,6 +404,7 @@ fun PreviewAppDrawerIn(
         onRoverSettingsClicked = {},
         onModelSettingsClicked = {},
         onVideoStreamSettingClicked = {},
+        onPromptSettingClicked = {},
         onChatClicked = {},
         onNewChatClicked = {},
         onIconClicked = {},

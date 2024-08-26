@@ -16,14 +16,17 @@ import com.chatgptlite.wanted.ui.common.AppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(onBackPressed: () -> Unit) {
+fun SettingsScreen(
+    viewModel: RoverSettingsViewModel = viewModel(),
+    onBackPressed: () -> Unit
+) {
     var ipAddress by remember { mutableStateOf("10.0.0.9") }
     var port by remember {
         mutableStateOf("8000")
     }
     var textToSend by remember { mutableStateOf("ros2 topic list") }
 
-    val viewModel: RoverSettingsViewModel = viewModel()
+
 
     val pingResult by viewModel.pingResult.collectAsState()
     val messageResult by viewModel.messageResult.collectAsState()
