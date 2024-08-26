@@ -1,9 +1,12 @@
 package com.chatgptlite.wanted.ui.settings.video
 
+import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,7 +14,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.ByteArrayInputStream
 
-class VideoCamSettingsViewModel : ViewModel() {
+class VideoCamSettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val client = OkHttpClient()
     val currentFrame = mutableStateOf<Bitmap?>(null)
 
@@ -46,10 +49,10 @@ class VideoCamSettingsViewModel : ViewModel() {
         with(sharedPreferences.edit()) {
             putString("ipAddress", ipAddress)
             putString("port", port)
-            putString("route", textToSend)
+            putString("route", route)
             apply()
         }
-        Log.i("CameraSettingsViewModel", "Config saved: $ipAddress:$port -> $textToSend")
+        Log.i("CameraSettingsViewModel", "Config saved: $ipAddress:$port -> $route")
     }
     fun loadConfig(): CameraConfig? {
         val sharedPreferences = getApplication<Application>().getSharedPreferences("CameraSetting", Context.MODE_PRIVATE)
