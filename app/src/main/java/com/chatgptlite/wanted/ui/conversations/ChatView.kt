@@ -307,7 +307,7 @@ private fun TextInput(
                                     sendMessage(textClone)
                                 }
                             }
-                            else if (chatState?.isFail() == true) {
+                            else if (chatState?.isInInitialization() == true) {
                                 Toast.makeText(context, "Please load model first", Toast.LENGTH_SHORT).show()
                             }
                             else {

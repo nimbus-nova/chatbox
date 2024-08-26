@@ -562,12 +562,15 @@ which file should you use, add python in front of it. Don't say anything else
         }
 
         private fun switchToReady() {
+            isInitialization = false
             modelChatState.value = ModelChatState.Ready
         }
 
         private fun switchToFailed() {
             modelChatState.value = ModelChatState.Falied
         }
+
+        private var isInitialization: Boolean = true
 
         private fun callBackend(callback: () -> Unit): Boolean {
             try {
@@ -733,8 +736,8 @@ which file should you use, add python in front of it. Don't say anything else
             return modelChatState.value == ModelChatState.Ready
         }
 
-        fun isFail(): Boolean {
-            return modelChatState.value == ModelChatState.Falied
+        fun isInInitialization(): Boolean {
+            return isInitialization
         }
 
         fun interruptable(): Boolean {
