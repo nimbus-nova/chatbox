@@ -60,8 +60,9 @@ class RoverSettingsViewModel(application: Application) : AndroidViewModel(applic
                     onFail?.invoke(msg)
                 }
             } catch (e: Exception) {
-                _messageResult.value = "Error sending message: ${e.message}"
-                e.message?.let { onFail?.invoke(it) }
+                val msg = "Error sending message: ${e.message}"
+                _messageResult.value = msg
+                e.message?.let { onFail?.invoke(msg) }
             }
         }
     }
