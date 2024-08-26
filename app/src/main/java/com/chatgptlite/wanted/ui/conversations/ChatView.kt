@@ -71,10 +71,12 @@ import com.chatgptlite.wanted.data.whisper.asr.Whisper
 import com.chatgptlite.wanted.data.whisper.utils.WaveUtil
 import com.chatgptlite.wanted.helpers.AudioPlayer
 import com.chatgptlite.wanted.permission.PermissionCheck
+import com.chatgptlite.wanted.ui.settings.rover.RoverSettingsViewModel
 import java.io.File
 
 @Composable
 fun ChatView(
+    roverSettingsViewModel: RoverSettingsViewModel,
     viewModel: VideoCamSettingsViewModel,
     mlcModelSettingsViewModelhatState: MlcModelSettingsViewModel
 ) {
@@ -122,8 +124,9 @@ fun ChatView(
 }
 
 @Composable
-fun MessageView(messageData: MessageData) {
+fun MessageView(roverSettingsViewModel: RoverSettingsViewModel, messageData: MessageData) {
     val context = LocalContext.current
+    var isSending by remember { mutableStateOf(false) }
     SelectionContainer {
         if (messageData.role == MessageRole.Assistant) {
             Row(
@@ -143,7 +146,18 @@ fun MessageView(messageData: MessageData) {
                         .padding(5.dp)
                         .widthIn(max = 300.dp)
                         .clickable(true) {
-                            Toast.makeText(context, "Send Command", Toast.LENGTH_SHORT).show()
+                            if (isSending) return@clickable
+                            roverSettingsViewModel.sendMessage(
+                                textToSend = messageData.text,
+                                onSuccess = {
+                                    Toast.makeText(context, "Send Command", Toast.LENGTH_SHORT).show()
+                                    isSending = false
+                                },
+                                onFail = {error ->
+                                    isSending = false
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            )
                         }
                 )
 

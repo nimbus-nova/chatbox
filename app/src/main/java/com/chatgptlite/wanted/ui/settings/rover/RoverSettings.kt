@@ -95,7 +95,7 @@ fun SettingsScreen(
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
-                    onClick = { viewModel.sendMessage("$ipAddress:$port", textToSend = textToSend) },
+                    onClick = { viewModel.sendMessage(textToSend = textToSend, "$ipAddress:$port") },
                     modifier = Modifier.weight(1f)
                 ) {
                     Text("Send Message")

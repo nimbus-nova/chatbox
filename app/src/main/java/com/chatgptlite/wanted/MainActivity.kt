@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                                                 scope.launch { drawerState.open() }
                                             }
                                             Divider()
-                                            ChatView(videoCamSettingsViewModel, mlcModelSettingsViewModel)
+                                            ChatView(roverViewModel, videoCamSettingsViewModel, mlcModelSettingsViewModel)
                                         }
                                     }
                                     composable(NavRoute.ROVER_SETTINGS) {

@@ -37,10 +37,14 @@ class RoverSettingsViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun sendMessage(ipAddress: String, textToSend: String) {
+    fun sendMessage(textToSend: String, ipAddress: String? = null, onSuccess: (() -> Unit)? = null, onFail: ((error: String) -> Unit)? = null) {
+        val newIpAddress = if (ipAddress == null) {
+            val sharedPreferences = getApplication<Application>().getSharedPreferences("RoverSettings", Context.MODE_PRIVATE)
+            sharedPreferences.getString("ipAddress", "") ?: return
+        } else ipAddress
         viewModelScope.launch {
             try {
-                val (ip, port) = ipAddress.split(":")
+                val (ip, port) = newIpAddress.split(":")
                 // url encode the textToSend
                 val encodedText = URLEncoder.encode(textToSend, StandardCharsets.UTF_8.toString())
 
@@ -49,11 +53,15 @@ class RoverSettingsViewModel(application: Application) : AndroidViewModel(applic
                 if (response.isSuccessful) {
                     val statusResponse = response.body()
                     _messageResult.value = "Message sent successfully. Server status: ${statusResponse?.status}. Request: ${statusResponse?.request}"
+                    onSuccess?.invoke()
                 } else {
-                    _messageResult.value = "Error sending message: ${response.message()}"
+                    val msg = "Error sending message: ${response.message()}"
+                    _messageResult.value = msg
+                    onFail?.invoke(msg)
                 }
             } catch (e: Exception) {
                 _messageResult.value = "Error sending message: ${e.message}"
+                e.message?.let { onFail?.invoke(it) }
             }
         }
     }
